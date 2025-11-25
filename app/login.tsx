@@ -1,48 +1,44 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, StatusBar, ScrollView, ActivityIndicator, Alert } from 'react-native';
-import { router } from 'expo-router';
-import { loginUser } from '../api/auth'; // Importa a API simulada
+import { useRouter } from 'expo-router';
 
-// Certifique-se de que o caminho para sua imagem está correto
-const burgerImage = require('../app/assets/LogoInicialApp.png'); 
+// SOLUÇÃO DEFINITIVA DE IMAGEM:
+// Usamos uma URL da internet para o App nunca mais travar procurando arquivo local
+const LOGO_URL = 'https://cdn-icons-png.flaticon.com/512/3075/3075977.png';
 
 const LoginScreen: React.FC = () => {
+    const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [isLoading, setIsLoading] = useState(false); // Novo estado de carregamento
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleLogin = async () => {
-        if (!email || !password) {
-            Alert.alert('Erro', 'Por favor, preencha todos os campos.');
-            return;
-        }
+        // 1. Validação básica
+        // if (!email || !password) {
+        //    Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+        //    return;
+        // }
 
         setIsLoading(true);
 
-        try {
-            const result = await loginUser(email, password);
-
-            if (result.startsWith('token_')) {
-                console.log(`[AUTH MOCK] Login bem-sucedido. Token: ${result}`);
-                Alert.alert('Bem-Vindo!', 'Login realizado com sucesso!');
-                // Se a autenticação for bem-sucedida, navega para a Home
-                router.replace('/(tabs)');
-            } else {
-                // Exibe mensagem de erro da API simulada
-                Alert.alert('Erro no Login', result);
-            }
-        } catch (error) {
-            Alert.alert('Erro de Rede', 'Não foi possível conectar ao servidor. Tente novamente.');
-        } finally {
+        // 2. SIMULAÇÃO DE LOGIN (Para funcionar sem API por enquanto)
+        setTimeout(() => {
             setIsLoading(false);
-        }
+            console.log('Login autorizado. Entrando...');
+            
+            // 3. NAVEGAÇÃO PARA AS ABAS (HOME)
+            // O replace impede que o usuário volte para o login ao apertar "Voltar"
+            router.replace('/(tabs)'); 
+            
+        }, 1500); // Espera 1.5 segundos para simular carregamento
     };
     
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
             <StatusBar barStyle="light-content" backgroundColor="#E72C2C" /> 
             
-            <Image source={burgerImage} style={styles.burgerImage} />
+            {/* Imagem Online (Segura) */}
+            <Image source={{ uri: LOGO_URL }} style={styles.burgerImage} />
             
             <Text style={styles.titleText}>Login</Text>
             
@@ -50,7 +46,7 @@ const LoginScreen: React.FC = () => {
             <TextInput
                 style={styles.input}
                 placeholder="E-mail"
-                placeholderTextColor="#999"
+                placeholderTextColor="#666"
                 keyboardType="email-address"
                 autoCapitalize="none"
                 value={email}
@@ -62,7 +58,7 @@ const LoginScreen: React.FC = () => {
             <TextInput
                 style={styles.input}
                 placeholder="Senha"
-                placeholderTextColor="#999"
+                placeholderTextColor="#666"
                 secureTextEntry={true}
                 value={password}
                 onChangeText={setPassword}
@@ -73,7 +69,7 @@ const LoginScreen: React.FC = () => {
             <TouchableOpacity 
                 style={styles.loginButton}
                 onPress={handleLogin}
-                disabled={isLoading} // Desabilita o botão durante o carregamento
+                disabled={isLoading}
             >
                 {isLoading ? (
                     <ActivityIndicator color="#E72C2C" />
@@ -92,7 +88,8 @@ const LoginScreen: React.FC = () => {
 
             <TouchableOpacity 
                 style={styles.forgotPassword}
-                onPress={() => router.push('/recuperar-senha')}
+                // Se não tiver a tela recuperar-senha, comente a linha abaixo
+                // onPress={() => router.push('/recuperar-senha')}
                 disabled={isLoading}
             >
                 <Text style={styles.linkText}>Esqueceu a senha?</Text>
@@ -112,8 +109,8 @@ const styles = StyleSheet.create({
         paddingBottom: 30,
     },
     burgerImage: {
-        width: 200, 
-        height: 160, 
+        width: 150, 
+        height: 150, 
         resizeMode: 'contain',
         marginBottom: 20,
     },
@@ -126,12 +123,12 @@ const styles = StyleSheet.create({
     input: {
         width: '80%',
         height: 50,
-        backgroundColor: '#D3D3D3', // Fundo cinza claro
+        backgroundColor: '#FFF', // Mudei para branco para ficar mais limpo
         borderRadius: 8,
         paddingHorizontal: 15,
         fontSize: 16,
         marginBottom: 20,
-        color: '#000', // Cor do texto digitado
+        color: '#000',
     },
     loginButton: {
         width: '80%',

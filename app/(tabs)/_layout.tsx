@@ -1,29 +1,25 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import { Drawer } from 'expo-router/drawer';
+import { DrawerContentScrollView, DrawerItemList, DrawerContentComponentProps } from '@react-navigation/drawer';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
-// Definição das informações do usuário de exemplo
-const USER_NAME = 'Davi';
-// CORREÇÃO DE CAMINHO: Deve ser o caminho correto da raiz
-const LOGO_PATH = require('../assets/LogoInicialApp.png'); 
-
-// Este componente é o conteúdo que aparece ao abrir o menu lateral
-const CustomDrawerContent = (props: any) => {
+// --- SEU COMPONENTE CUSTOMIZADO (Integrado aqui para funcionar) ---
+function CustomDrawerContent(props: DrawerContentComponentProps) {
+    
+    // Caminho da imagem (Usando o local ./logo.png que já sabemos que funciona)
+    const LOGO_PATH = require('../assets/LogoInicialApp.png'); 
+    const USER_NAME = 'Davi';
 
     const handleLogout = () => {
-        // Lógica de desautenticação real
-        console.log('[AUTH MOCK] Usuário deslogado.');
-        
-        // NAVEGAÇÃO: Volta para a pilha de autenticação (Presentation Screen),
-        // o que o _layout.tsx interpreta como desautenticação.
+        console.log('[AUTH] Usuário deslogado.');
         router.replace('/'); 
     };
 
     return (
         <View style={drawerStyles.container}>
-            {/* --- Seção do Cabeçalho do Drawer (Foto e Nome) --- */}
+            {/* --- Cabeçalho do Menu --- */}
             <View style={drawerStyles.header}>
                 <View style={drawerStyles.profileContainer}>
                     <Image 
@@ -32,18 +28,18 @@ const CustomDrawerContent = (props: any) => {
                     />
                     <Text style={drawerStyles.greetingText}>Olá, {USER_NAME}!</Text>
                 </View>
-                {/* Ícone de carrinho no topo do menu lateral */}
+                {/* Ícone de carrinho no menu */}
                 <TouchableOpacity onPress={() => router.push('/carrinho')}>
                     <Ionicons name="cart-outline" size={28} color="#E72C2C" />
                 </TouchableOpacity>
             </View>
 
-            {/* --- Lista de Itens de Navegação Padrão --- */}
+            {/* --- Lista de Links (Home, Menu, Conta...) --- */}
             <DrawerContentScrollView {...props} contentContainerStyle={{ paddingTop: 0 }}>
-                {/* Renderiza todos os itens que você configurou no _layout.tsx (Home, Minha Conta, etc.) */}
-                <DrawerItemList {...props} /> 
+                {/* O {...props} aqui é essencial para evitar o erro 'reading routes' */}
+                <DrawerItemList {...props} />
 
-                {/* --- Ação de Sair da Conta (Ação separada) --- */}
+                {/* --- Botão Sair --- */}
                 <TouchableOpacity onPress={handleLogout} style={drawerStyles.logoutButton}>
                     <View style={drawerStyles.logoutRow}>
                         <Ionicons name="log-out-outline" size={24} color="#E72C2C" />
@@ -51,16 +47,73 @@ const CustomDrawerContent = (props: any) => {
                     </View>
                 </TouchableOpacity>
 
-                {/* --- Rodapé (DI DELIVERY) --- */}
+                {/* --- Rodapé --- */}
                 <View style={drawerStyles.footer}>
                     <Text style={drawerStyles.footerText}>DI DELIVERY</Text>
                 </View>
             </DrawerContentScrollView>
         </View>
     );
-};
+}
 
-// --- Estilos ---
+// --- CONFIGURAÇÃO DO DRAWER (LAYOUT) ---
+export default function DrawerLayout() {
+  return (
+    <Drawer
+      // AQUI ESTAVA O SEGREDO DO ERRO:
+      // Precisamos passar '{...props}' para o componente customizado receber as rotas
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      
+      screenOptions={{
+        headerShown: false, // Esconde cabeçalho padrão
+        drawerActiveTintColor: '#E72C2C', // Cor do ícone ativo
+        drawerInactiveTintColor: '#333',  // Cor do ícone inativo
+        drawerLabelStyle: {
+            marginLeft: -20,
+            fontWeight: 'bold',
+        },
+      }}
+    >
+        {/* Telas do Menu */}
+        <Drawer.Screen
+            name="index"
+            options={{
+                drawerLabel: 'Início',
+                title: 'Início',
+                drawerIcon: ({ color, size }) => <Ionicons name="home-outline" color={color} size={size} />,
+            }}
+        />
+        <Drawer.Screen
+            name="carrinho"
+            options={{
+                drawerLabel: 'Meu Carrinho',
+                title: 'Carrinho',
+                drawerIcon: ({ color, size }) => <Ionicons name="cart-outline" color={color} size={size} />,
+            }}
+        />
+        <Drawer.Screen
+            name="menu"
+            options={{
+                drawerLabel: 'Cardápio',
+                title: 'Cardápio',
+                drawerIcon: ({ color, size }) => <Ionicons name="fast-food-outline" color={color} size={size} />,
+            }}
+        />
+        <Drawer.Screen
+            name="minha-conta"
+            options={{
+                drawerLabel: 'Minha Conta',
+                title: 'Perfil',
+                drawerIcon: ({ color, size }) => <Ionicons name="person-circle-outline" color={color} size={size} />,
+            }}
+        />
+        {/* Telas ocultas (mas registradas) */}
+        {/* Se tiver telas como 'buscar', adicione aqui */}
+    </Drawer>
+  );
+}
+
+// --- SEUS ESTILOS ---
 const drawerStyles = StyleSheet.create({
     container: {
         flex: 1,
@@ -106,13 +159,13 @@ const drawerStyles = StyleSheet.create({
     },
     logoutText: {
         fontSize: 16,
-        marginLeft: 28,
+        marginLeft: 28, // Ajuste para alinhar com o texto dos itens padrão
         color: '#E72C2C',
         fontWeight: 'bold',
     },
     footer: {
         padding: 20,
-        marginTop: 'auto',
+        marginTop: 20,
         alignItems: 'center',
     },
     footerText: {
@@ -121,5 +174,3 @@ const drawerStyles = StyleSheet.create({
         color: '#E72C2C',
     }
 });
-
-export default CustomDrawerContent;
