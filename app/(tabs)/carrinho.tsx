@@ -89,6 +89,7 @@ const CarrinhoScreen: React.FC = () => {
                 ))}
                 
                 
+                
                 {/* Sub Total */}
                 <View style={cartStyles.summaryRow}>
                     <Text style={cartStyles.summaryText}>Sub Total:</Text>

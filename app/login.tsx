@@ -118,14 +118,16 @@ const styles = StyleSheet.create({
         fontSize: 32,
         fontWeight: 'bold',
         color: '#FFF', 
-        marginBottom: 30,
+        marginTop: 30,
+        marginBottom: 10
     },
     input: {
+        marginTop: 30,
         width: '80%',
-        height: 50,
+        height: 60,
         backgroundColor: '#FFF', // Mudei para branco para ficar mais limpo
         borderRadius: 8,
-        paddingHorizontal: 15,
+        paddingHorizontal: 20,
         fontSize: 16,
         marginBottom: 20,
         color: '#000',
@@ -135,8 +137,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFD700', // Botão amarelo
         paddingVertical: 15,
         borderRadius: 8,
-        marginTop: 10,
-        marginBottom: 20,
+        marginTop: 30,
+        marginBottom: 40,
         alignItems: 'center',
         elevation: 3, 
     },

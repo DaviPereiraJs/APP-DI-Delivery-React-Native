@@ -15,7 +15,8 @@ const PresentationScreen: React.FC = () => {
       <Image source={burgerImage} style={styles.burgerImage} />
       
       {/* Texto DI DELIVERY */}
-      <Text style={styles.logoText}>DI DELIVERY</Text>
+
+      <Text style={styles.logoText}>DI  DELIVERY</Text>
       
       {/* Botão Entrar, que agora navega para a tela '/login' */}
       <TouchableOpacity 
@@ -42,14 +43,20 @@ const styles = StyleSheet.create({
     width: 250, 
     height: 200, 
     resizeMode: 'contain',
-    marginBottom: 20,
+    marginTop: 30,
   },
+
+  logoDestaque: {
+    color: '#FFD700', // Amarelo
+    // O restante do estilo (tamanho, peso, etc.) é herdado de logoText
+  },
+
   logoText: {
     fontSize: 40,
     fontWeight: 'bold',
     color: '#FFF', // Texto branco
     letterSpacing: 2,
-    marginBottom: 40,
+    marginBottom: 20,
   },
   button: {
     backgroundColor: '#FFD700', // Botão amarelo
@@ -61,6 +68,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+    marginBottom: 25
   },
   buttonText: {
     fontSize: 22,

@@ -61,12 +61,12 @@ const MenuScreen: React.FC = () => {
             {/* --- CABEÇALHO --- */}
             <View style={menuStyles.header}>
                 <TouchableOpacity onPress={() => router.back()}>
-                    <Ionicons name="arrow-back" size={28} color="#FFF" />
+                    <Ionicons name="arrow-back" size={28} color="#000000ff" />
                 </TouchableOpacity>
                 
                 {/* Botão Menu */}
                 <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
-                    <Ionicons name="menu" size={28} color="#FFF" /> 
+                    <Ionicons name="menu" size={28} color="#000000ff" /> 
                 </TouchableOpacity>
             </View>
 
@@ -112,7 +112,7 @@ const menuStyles = StyleSheet.create({
     header: {
         backgroundColor: '#E72C2C',
         padding: 15,
-        paddingTop: 40,
+        paddingTop: 20,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -133,7 +133,7 @@ const menuStyles = StyleSheet.create({
     overlayTitle: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#FFF',
+        color: '#ffffffff',
         textShadowColor: 'rgba(0, 0, 0, 0.75)',
         textShadowOffset: {width: -1, height: 1},
         textShadowRadius: 10

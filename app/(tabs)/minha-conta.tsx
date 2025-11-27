@@ -103,7 +103,7 @@ const MinhaContaScreen: React.FC = () => {
                 </View>
 
                 {/* Botão de Logout */}
-                <TouchableOpacity style={contaStyles.logoutButton} onPress={() => router.replace('/')}>
+                <TouchableOpacity style={contaStyles.logoutButton} onPress={() => router.replace('/login')}>
                     <Text style={contaStyles.logoutText}>Sair da Conta</Text>
                 </TouchableOpacity>
 
