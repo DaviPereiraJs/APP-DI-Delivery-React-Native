@@ -48,11 +48,11 @@ const HomeScreen: React.FC = () => {
             {/* --- NOVO CABEÇALHO COM BOTÃO MENU --- */}
             <View style={styles.topHeader}>
                 <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
-                    <Ionicons name="menu" size={30} color="#E72C2C" />
+                    <Ionicons name="menu" size={30} color="#000000ff" />
                 </TouchableOpacity>
-                <Text style={styles.logoText}>DI Delivery</Text>
+                <Text style={styles.logoText}>DI DELIVERY</Text>
                 <TouchableOpacity onPress={() => router.push('/carrinho')}>
-                     <Ionicons name="cart-outline" size={28} color="#E72C2C" />
+                     <Ionicons name="cart-outline" size={28} color="#000000ff" />
                 </TouchableOpacity>
             </View>
 
@@ -109,7 +109,7 @@ const HomeScreen: React.FC = () => {
             {/* --- FOOTER/TAB BAR --- */}
             <View style={styles.tabBar}>
                 <TouchableOpacity style={styles.tabItem} onPress={() => router.replace('/(tabs)')}>
-                    <Ionicons name="home" size={24} color="#E72C2C" />
+                    <Ionicons name="home" size={24} color="#FFD000" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.tabItem} onPress={() => router.push('/(tabs)/buscar')}>
                     <Ionicons name="search-outline" size={24} color="#000" />
@@ -139,13 +139,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 15,
         paddingBottom: 10,
-        backgroundColor: '#FFF',
+        backgroundColor: '#E72C2C',
         elevation: 2,
+        color: '#000000ff'
     },
     logoText: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#E72C2C',
+        color: '#000000ff',
     },
     contentContainer: {
         flex: 1,
@@ -269,7 +270,7 @@ const styles = StyleSheet.create({
     tabBar: {
         flexDirection: 'row',
         height: 60,
-        backgroundColor: '#FFF',
+        backgroundColor: '#E72C2C',
         borderTopWidth: 1,
         borderTopColor: '#DDD',
         justifyContent: 'space-around',

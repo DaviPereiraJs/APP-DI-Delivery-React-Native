@@ -41,7 +41,7 @@ const ConfimacaoPedidoScreen: React.FC = () => {
             <TouchableOpacity 
                 style={confirmStyles.backHomeButton}
                 // Limpa a pilha e volta para a tela inicial (Home)
-                onPress={() => router.replace('./(tabs)/index')} 
+                onPress={() => router.replace('/(tabs)')} 
             >
                 <Text style={confirmStyles.backHomeText}>Voltar para o Início</Text>
             </TouchableOpacity>

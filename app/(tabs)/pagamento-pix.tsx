@@ -63,8 +63,9 @@ const PagamentoPixScreen: React.FC = () => {
                 </TouchableOpacity>
                 
                 {/* Opção Dinheiro (Desabilitada nesta tela, mas visível) */}
-                <TouchableOpacity style={pixStyles.paymentOption}>
+                <TouchableOpacity style={pixStyles.paymentOption} onPress={() => router.replace('/pagamento-dinheiro')} >
                     <Text style={pixStyles.paymentOptionText}>Dinheiro</Text>
+                    
                 </TouchableOpacity>
 
                 {/* --- DETALHES DO PIX --- */}
@@ -134,9 +135,9 @@ const pixStyles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: 15,
-        paddingTop: 40,
-        backgroundColor: '#FFF',
+        padding: 10,
+        paddingTop: 20,
+        backgroundColor: '#E72C2C',
         borderBottomWidth: 1,
         borderBottomColor: '#EEE',
     },
@@ -259,7 +260,7 @@ const pixStyles = StyleSheet.create({
     tabBar: {
         flexDirection: 'row',
         height: 60,
-        backgroundColor: '#FFF',
+        backgroundColor: '#E72C2C',
         borderTopWidth: 1,
         borderTopColor: '#DDD',
         justifyContent: 'space-around',

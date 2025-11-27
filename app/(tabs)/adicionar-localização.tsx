@@ -130,16 +130,16 @@ const AdicionarLocalizacaoScreen: React.FC = () => {
             
             {/* BARRA DE NAVEGAÇÃO INFERIOR */}
             <View style={locationStyles.tabBar}>
-                <TouchableOpacity style={locationStyles.tabItem} onPress={() => router.replace('./home')}>
+                <TouchableOpacity style={locationStyles.tabItem} onPress={() => router.replace('/(tabs)')}>
                     <Ionicons name="home-outline" size={24} color="#000" />
                 </TouchableOpacity>
-                <TouchableOpacity style={locationStyles.tabItem}>
+                <TouchableOpacity style={locationStyles.tabItem} onPress={() => router.replace('/buscar')}>
                     <Ionicons name="search-outline" size={24} color="#000" />
                 </TouchableOpacity>
-                <TouchableOpacity style={locationStyles.tabItem} onPress={() => router.push('./carrinho')}>
+                <TouchableOpacity style={locationStyles.tabItem} onPress={() => router.replace('/carrinho')}>
                     <Ionicons name="cart-outline" size={24} color="#000" />
                 </TouchableOpacity>
-                <TouchableOpacity style={locationStyles.tabItem}>
+                <TouchableOpacity style={locationStyles.tabItem} onPress={() => router.replace('/minha-conta')}>
                     <Ionicons name="person-outline" size={24} color="#000" />
                 </TouchableOpacity>
             </View>
@@ -158,8 +158,8 @@ const locationStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: 15,
-        paddingTop: 40,
-        backgroundColor: '#FFF',
+        paddingTop: 20,
+        backgroundColor: '#E72C2C',
         borderBottomWidth: 1,
         borderBottomColor: '#EEE',
     },
@@ -238,7 +238,7 @@ const locationStyles = StyleSheet.create({
     tabBar: {
         flexDirection: 'row',
         height: 60,
-        backgroundColor: '#FFF',
+        backgroundColor: '#E72C2C',
         borderTopWidth: 1,
         borderTopColor: '#DDD',
         justifyContent: 'space-around',

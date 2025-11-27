@@ -17,6 +17,20 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
         router.replace('/'); 
     };
 
+    const HIDDEN_ROUTES = [
+        'pagamento-pix', 
+        'pagamento-dinheiro',  
+        'confirmacao-pedido'// Carrinho também costuma ser ocultado do Drawer principal
+    ];
+
+    const filteredProps = {
+        ...props,
+        state: {
+            ...props.state,
+            routes: props.state.routes.filter(route => !HIDDEN_ROUTES.includes(route.name)),
+        },
+    };
+
     return (
         <View style={drawerStyles.container}>
             {/* --- Cabeçalho do Menu --- */}
@@ -29,9 +43,6 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
                     <Text style={drawerStyles.greetingText}>Olá, {USER_NAME}!</Text>
                 </View>
                 {/* Ícone de carrinho no menu */}
-                <TouchableOpacity onPress={() => router.push('/carrinho')}>
-                    <Ionicons name="cart-outline" size={28} color="#E72C2C" />
-                </TouchableOpacity>
             </View>
 
             {/* --- Lista de Links (Home, Menu, Conta...) --- */}
@@ -43,7 +54,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
                 <TouchableOpacity onPress={handleLogout} style={drawerStyles.logoutButton}>
                     <View style={drawerStyles.logoutRow}>
                         <Ionicons name="log-out-outline" size={24} color="#E72C2C" />
-                        <Text style={drawerStyles.logoutText}>Sair da conta</Text>
+                        <Text style={drawerStyles.logoutText} onPress={() => router.push('/login')}>Sair da conta</Text>
                     </View>
                 </TouchableOpacity>
 
@@ -69,7 +80,7 @@ export default function DrawerLayout() {
         drawerActiveTintColor: '#E72C2C', // Cor do ícone ativo
         drawerInactiveTintColor: '#333',  // Cor do ícone inativo
         drawerLabelStyle: {
-            marginLeft: -20,
+            marginLeft: 8,
             fontWeight: 'bold',
         },
       }}
@@ -107,7 +118,43 @@ export default function DrawerLayout() {
                 drawerIcon: ({ color, size }) => <Ionicons name="person-circle-outline" color={color} size={size} />,
             }}
         />
+           <Drawer.Screen
+            name="buscar" // BUSCAR
+            options={{
+            drawerLabel: 'Buscar',
+            title: 'Buscar',
+            drawerIcon: ({ color, size }) => <Ionicons name="search-outline" color={color} size={size} />,
+             }}
+        />
+          <Drawer.Screen
+            name="historico" // HISTÓRICO
+            options={{
+            drawerLabel: 'Histórico',
+            title: 'Histórico de Pedidos',
+            drawerIcon: ({ color, size }) => <Ionicons name="receipt-outline" color={color} size={size} />,
+            }}
+        />
+        
+        
+
+        
         {/* Telas ocultas (mas registradas) */}
+            
+        <Drawer.Screen
+            name="pagamento-pix"
+            options={{
+                title: 'Pagamento PIX',
+               //  href: null, 
+            }}
+        />
+
+        <Drawer.Screen
+            name="pagamento-dinheiro"
+            options={{
+                title: 'Pagamento em Dinheiro',
+                // href: null, 
+            }}
+        />
         {/* Se tiver telas como 'buscar', adicione aqui */}
     </Drawer>
   );

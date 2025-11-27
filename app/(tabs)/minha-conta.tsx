@@ -5,8 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 // Dados de Exemplo do Usuário
 const USER_NAME = 'Davi Nascimento';
-const USER_EMAIL = 'davi.nascimento@example.com';
-const USER_PHONE = '(88) 99999-9999';
+const USER_EMAIL = 'davi.nascimento@gmail.com';
+const USER_PHONE = '(88) 98152-2318';
 
 // CORREÇÃO CRÍTICA: Usando a imagem local ./logo.png
 const USER_ICON = require('../assets/LogoInicialApp.png'); 
@@ -78,15 +78,9 @@ const MinhaContaScreen: React.FC = () => {
                     <Text style={contaStyles.sectionTitle}>Configurações da Conta</Text>
 
                     <SettingsItem 
-                        icon="card-outline"
-                        label="Métodos de Pagamento"
-                        onPress={handlePaymentMethods}
-                    />
-
-                    <SettingsItem 
                         icon="location-outline"
                         label="Meus Endereços"
-                        onPress={handleAddresses}
+                        onPress={() => router.replace('./adicionar-localização')} 
                     />
                     
                     <SettingsItem 
@@ -129,8 +123,8 @@ const contaStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: 15,
-        paddingTop: 40,
-        backgroundColor: '#FFF',
+        paddingTop: 20,
+        backgroundColor: '#E72C2C',
         borderBottomWidth: 1,
         borderBottomColor: '#EEE',
     },

@@ -31,7 +31,7 @@ const CustomDrawerContent = (props: any) => {
                     />
                     <Text style={drawerStyles.greetingText}>Olá, {USER_NAME}!</Text>
                 </View>
-                {/* Ícone de carrinho no topo do menu lateral (como no seu protótipo) */}
+                {/* Ícone de carrinho no topo do menu lateral */}
                 <TouchableOpacity onPress={() => router.push('./carrinho')}>
                     <Ionicons name="cart-outline" size={28} color="#E72C2C" />
                 </TouchableOpacity>

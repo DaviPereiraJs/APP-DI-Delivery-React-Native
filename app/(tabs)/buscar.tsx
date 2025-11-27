@@ -145,16 +145,16 @@ const BuscarScreen: React.FC = () => {
             {/* BARRA DE NAVEGAÇÃO INFERIOR */}
             <View style={searchStyles.tabBar}>
                 {/* Home: '/(tabs)' é o caminho correto para o index */}
-                <TouchableOpacity style={searchStyles.tabItem} onPress={() => router.replace('./(tabs)')}>
+                <TouchableOpacity style={searchStyles.tabItem} onPress={() => router.replace('/(tabs)')}>
                     <Ionicons name="home-outline" size={24} color="#000" />
                 </TouchableOpacity>
                 <TouchableOpacity style={searchStyles.tabItem}>
-                    <Ionicons name="search" size={24} color="#E72C2C" /> {/* Ativo */}
+                    <Ionicons name="search" size={24} color="#FFD700" /> {/* Ativo */}
                 </TouchableOpacity>
-                <TouchableOpacity style={searchStyles.tabItem} onPress={() => router.push('./(tabs)/carrinho')}>
+                <TouchableOpacity style={searchStyles.tabItem} onPress={() => router.push('/(tabs)/carrinho')}>
                     <Ionicons name="cart-outline" size={24} color="#000" />
                 </TouchableOpacity>
-                <TouchableOpacity style={searchStyles.tabItem} onPress={() => router.push('./(tabs)/minha-conta')}>
+                <TouchableOpacity style={searchStyles.tabItem} onPress={() => router.push('/(tabs)/minha-conta')}>
                     <Ionicons name="person-outline" size={24} color="#000" />
                 </TouchableOpacity>
             </View>
@@ -278,7 +278,7 @@ const searchStyles = StyleSheet.create({
     tabBar: {
         flexDirection: 'row',
         height: 60,
-        backgroundColor: '#FFF',
+        backgroundColor: '#E72C2C',
         borderTopWidth: 1,
         borderTopColor: '#DDD',
         justifyContent: 'space-around',

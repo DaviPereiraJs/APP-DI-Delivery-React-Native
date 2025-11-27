@@ -76,7 +76,7 @@ const CarrinhoScreen: React.FC = () => {
                 
                 {/* CORREÇÃO DO BOTÃO MENU */}
                 <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
-                    <Ionicons name="menu" size={28} color="#E72C2C" />
+                    <Ionicons name="menu" size={30} color="#000000ff" />
                 </TouchableOpacity>
             </View>
 
@@ -87,6 +87,7 @@ const CarrinhoScreen: React.FC = () => {
                 {cartItems.map(item => (
                     <CartItem key={item.id} item={item} />
                 ))}
+                
                 
                 {/* Sub Total */}
                 <View style={cartStyles.summaryRow}>
@@ -111,10 +112,27 @@ const CarrinhoScreen: React.FC = () => {
             {/* --- FOOTER / BOTÃO DE PAGAMENTO --- */}
             <TouchableOpacity
                 style={cartStyles.checkoutButton}
-                onPress={() => router.push('/pagamento-pix')} // Certifique-se que o caminho começa com /
+                onPress={() => router.push('/pagamento-pix')}
+                 // Certifique-se que o caminho começa com /
             >
                 <Text style={cartStyles.checkoutButtonText}>Escolher Forma de Pagamento</Text>
             </TouchableOpacity>
+
+             <View style={cartStyles.tabBar}>
+                            <TouchableOpacity style={cartStyles.tabItem} onPress={() => router.replace('/(tabs)')}>
+                                <Ionicons name="home" size={24} color="#000" />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={cartStyles.tabItem} onPress={() => router.push('/(tabs)/buscar')}>
+                                <Ionicons name="search-outline" size={24} color="#000" />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={cartStyles.tabItem} onPress={() => router.push('/carrinho')}>
+                                <Ionicons name="cart-outline" size={24} color="#FFD000" />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={cartStyles.tabItem} onPress={() => router.push('/(tabs)/minha-conta')}>
+                                <Ionicons name="person-outline" size={24} color="#000" />
+                            </TouchableOpacity>
+                        </View>
+
         </View>
     );
 };
@@ -130,13 +148,15 @@ const cartStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: 15,
-        paddingTop: 40,
+        paddingTop: 20,
         borderBottomWidth: 1,
         borderBottomColor: '#EEE',
+        backgroundColor: '#ff0000ff'
     },
     headerTitle: {
         fontSize: 20,
         fontWeight: 'bold',
+        alignItems: 'center'
     },
     listContainer: {
         flex: 1,
@@ -220,7 +240,21 @@ const cartStyles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         color: '#E72C2C',
-    }
+    },
+    tabBar: {
+        flexDirection: 'row',
+        height: 60,
+        backgroundColor: '#E72C2C',
+        borderTopWidth: 1,
+        borderTopColor: '#DDD',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+    },
+    tabItem: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 });
 
 export default CarrinhoScreen;
