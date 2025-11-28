@@ -4,7 +4,10 @@ import { router } from 'expo-router';
 import { registerUser } from '../api/auth'; // Importa a API simulada
 
 // Certifique-se de que o caminho para sua imagem está correto
-const burgerImage = require('../app/assets/LogoInicialApp.png'); 
+// const burgerImage = require('../app/assets/LogoInicialApp.png'); 
+// const LOGO_URL = 'https://cdn-icons-png.flaticon.com/512/3075/3075977.png'
+const burgerImage = require('../app/assets/imgLogo1.png'); 
+
 
 const CadastroScreen: React.FC = () => {
   const [name, setName] = useState('');

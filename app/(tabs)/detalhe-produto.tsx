@@ -34,11 +34,13 @@ const DetalheProdutoScreen: React.FC = () => {
             {/* --- CABEÇALHO --- */}
             <View style={detailStyles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={detailStyles.iconButton}>
-                    <Ionicons name="arrow-back" size={28} color="#FFF" />
+                    <Ionicons name="arrow-back" size={30} color="#000000ff"/>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => router.push('./(tabs)/carrinho')} style={detailStyles.iconButton}>
-                    <Ionicons name="cart-outline" size={28} color="#FFF" />
+                <Text style={detailStyles.logoText}>SOBRE O PRODUTO</Text>
+                <TouchableOpacity onPress={() => router.replace('/(tabs)/carrinho')} style={detailStyles.iconButton}>
+                    <Ionicons name="cart-outline" size={30} color="#000000ff" />
                 </TouchableOpacity>
+                
             </View>
 
             {/* --- CONTEÚDO PRINCIPAL --- */}
@@ -83,11 +85,11 @@ const DetalheProdutoScreen: React.FC = () => {
             <View style={detailStyles.footer}>
                 <View style={detailStyles.quantityControls}>
                     <TouchableOpacity onPress={decrementQuantity}>
-                        <Ionicons name="remove-circle-outline" size={36} color="#E72C2C" />
+                        <Ionicons name="remove-circle-outline" size={30} color="#E72C2C" />
                     </TouchableOpacity>
                     <Text style={detailStyles.quantityText}>{quantity}</Text>
                     <TouchableOpacity onPress={incrementQuantity}>
-                        <Ionicons name="add-circle" size={36} color="#E72C2C" />
+                        <Ionicons name="add-circle" size={30} color="#E72C2C" />
                     </TouchableOpacity>
                 </View>
                 
@@ -107,9 +109,11 @@ const DetalheProdutoScreen: React.FC = () => {
 const detailStyles = StyleSheet.create({
     fullContainer: {
         flex: 1,
-        backgroundColor: '#FFF',
+        backgroundColor: '#E72C2C',
+        
     },
     header: {
+        backgroundColor: '#E72C2C',
         position: 'absolute',
         top: 0,
         left: 0,
@@ -117,18 +121,25 @@ const detailStyles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         padding: 15,
-        paddingTop: 40,
+        paddingTop: 18,
         zIndex: 10, // Garante que o header fique acima da imagem
     },
     iconButton: {
-        backgroundColor: 'rgba(0,0,0,0.4)',
+    
         borderRadius: 20,
-        padding: 5,
+        padding: 6,
+    },
+     logoText: {
+        marginTop: 10,
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#000000ff',
     },
     content: {
         flex: 1,
     },
     productImage: {
+        backgroundColor: 'black',
         width: '100%',
         height: 300, // Altura grande para destaque
         resizeMode: 'cover',
@@ -137,8 +148,7 @@ const detailStyles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#FFF',
         // Cria um efeito de 'subir' sobre a imagem
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
+       
         marginTop: -20, 
     },
     productName: {
@@ -196,7 +206,7 @@ const detailStyles = StyleSheet.create({
         borderBottomColor: '#F0F0F0',
     },
     optionLabel: {
-        fontSize: 16,
+        fontSize: 19,
         flex: 1,
     },
     optionExtra: {
@@ -220,16 +230,16 @@ const detailStyles = StyleSheet.create({
         alignItems: 'center',
     },
     quantityText: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
-        marginHorizontal: 15,
+        marginHorizontal: 10,
     },
     addToCartButton: {
         backgroundColor: '#E72C2C', // Vermelho
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: 12,
-        paddingHorizontal: 20,
+        paddingHorizontal: 13,
         borderRadius: 8,
         elevation: 3,
     },
@@ -242,7 +252,7 @@ const detailStyles = StyleSheet.create({
     addToCartTotal: {
         backgroundColor: '#FFD700', // Amarelo
         padding: 5,
-        borderRadius: 4,
+        borderRadius: 9,
         color: '#E72C2C',
         fontWeight: 'bold',
     },

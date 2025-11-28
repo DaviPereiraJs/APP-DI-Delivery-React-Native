@@ -66,7 +66,7 @@ const HomeScreen: React.FC = () => {
                     {DUMMY_BURGERS.slice(0, 5).map(burger => (
                         <View key={burger.id} style={styles.productCircle}>
                             {/* CORREÇÃO: Usando a imagem local ./logo.png */}
-                            <Image source={require('../assets/LogoInicialApp.png')} style={styles.circleImage} />
+                            <Image source={require('../assets/imgPizza.png')} style={styles.circleImage} />
                         </View>
                     ))}
                 </View>

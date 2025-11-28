@@ -37,9 +37,9 @@ const popularCategories: CategoryData[] = [
 
 // Dados de Exemplo para Resultados de Busca (Mock)
 const searchResults: RestaurantData[] = [
-    { id: 'r1', name: 'O Rei do Hambúrguer', rating: 4.5, time: '20-30 min', category: 'Lanches' },
-    { id: 'r2', name: 'Mega Bacon House', rating: 4.8, time: '35-45 min', category: 'Hambúrgueres' },
-    { id: 'r3', name: 'Fast Food DI', rating: 3.9, time: '15-25 min', category: 'Lanches' },
+    { id: 'r1', name: 'DI Delivery', rating: 4.9, time: '20-30 min', category: 'Lanches' },
+    { id: 'r2', name: 'Mega Bacon House', rating: 4.5, time: '35-45 min', category: 'Hambúrgueres' },
+    { id: 'r3', name: 'Rei do Hambúrguer', rating: 3.9, time: '15-25 min', category: 'Lanches' },
 ];
 
 // Componente para renderizar um card de categoria (Tipagem corrigida)
@@ -95,7 +95,7 @@ const BuscarScreen: React.FC = () => {
                     onSubmitEditing={handleSearch}
                 />
                 <TouchableOpacity style={searchStyles.searchIcon} onPress={handleSearch}>
-                    <Ionicons name="search" size={24} color="#E72C2C" />
+                    <Ionicons name="search" size={24} color="#000000ff" />
                 </TouchableOpacity>
             </View>
 
@@ -172,8 +172,8 @@ const searchStyles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
-        paddingTop: 40,
-        backgroundColor: '#FFF',
+        paddingTop: 20,
+        backgroundColor: '#ffffffff',
         borderBottomWidth: 1,
         borderBottomColor: '#EEE',
     },

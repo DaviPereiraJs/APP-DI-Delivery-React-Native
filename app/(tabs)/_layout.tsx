@@ -20,7 +20,9 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
     const HIDDEN_ROUTES = [
         'pagamento-pix', 
         'pagamento-dinheiro',  
-        'confirmacao-pedido'// Carrinho também costuma ser ocultado do Drawer principal
+        'confirmacao-pedido',
+        'adicionar-localização'
+        // Carrinho também costuma ser ocultado do Drawer principal
     ];
 
     const filteredProps = {
@@ -49,6 +51,8 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
             <DrawerContentScrollView {...props} contentContainerStyle={{ paddingTop: 0 }}>
                 {/* O {...props} aqui é essencial para evitar o erro 'reading routes' */}
                 <DrawerItemList {...props} />
+                
+                
 
                 {/* --- Botão Sair --- */}
                 <TouchableOpacity onPress={handleLogout} style={drawerStyles.logoutButton}>
@@ -134,27 +138,29 @@ export default function DrawerLayout() {
             drawerIcon: ({ color, size }) => <Ionicons name="receipt-outline" color={color} size={size} />,
             }}
         />
+        <Drawer.Screen
+        name="detalhe-produto"
+        options={{
+        title: 'Detalhes do Produto',
+        // ÍCONE ADICIONADO AQUI:
+        drawerIcon: ({ color, size }) => <Ionicons name="eye-outline" color={color} size={size} />,
+        }}
+        />
+       
+       
+
+        
+            
+        
+
         
         
 
         
         {/* Telas ocultas (mas registradas) */}
             
-        <Drawer.Screen
-            name="pagamento-pix"
-            options={{
-                title: 'Pagamento PIX',
-               //  href: null, 
-            }}
-        />
-
-        <Drawer.Screen
-            name="pagamento-dinheiro"
-            options={{
-                title: 'Pagamento em Dinheiro',
-                // href: null, 
-            }}
-        />
+        
+      
         {/* Se tiver telas como 'buscar', adicione aqui */}
     </Drawer>
   );

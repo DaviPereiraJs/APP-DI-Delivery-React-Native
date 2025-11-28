@@ -56,12 +56,11 @@ const PagamentoDinheiroScreen: React.FC = () => {
                 
                 {/* Seção de Resumo da Entrega (Topo) */}
                 <View style={dinheiroStyles.summarySection}>
-                    <Text style={dinheiroStyles.summaryText}>Taxa de entrega:</Text>
-                    <Text style={dinheiroStyles.summaryValue}>Taxa: X</Text>
+
                 </View>
                 <View style={dinheiroStyles.summarySection}>
-                    <Text style={dinheiroStyles.summaryText}>Total Final:</Text>
-                    <Text style={dinheiroStyles.summaryValue}>R$ {TOTAL_FINAL.toFixed(2).replace('.', ',')} + X</Text>
+                    <Text style={dinheiroStyles.summaryText}>Valor Final:</Text>
+                    <Text style={dinheiroStyles.summaryValue}>R$ {TOTAL_FINAL.toFixed(2).replace('.', ',')}</Text>
                 </View>
 
                 {/* --- FORMAS DE PAGAMENTO --- */}
@@ -133,16 +132,16 @@ const PagamentoDinheiroScreen: React.FC = () => {
 
             {/* BARRA DE NAVEGAÇÃO INFERIOR */}
             <View style={dinheiroStyles.tabBar}>
-                <TouchableOpacity style={dinheiroStyles.tabItem} onPress={() => router.replace('./home')}>
+                <TouchableOpacity style={dinheiroStyles.tabItem} onPress={() => router.replace('/(tabs)')}>
                     <Ionicons name="home-outline" size={24} color="#000" />
                 </TouchableOpacity>
-                <TouchableOpacity style={dinheiroStyles.tabItem}>
+                <TouchableOpacity style={dinheiroStyles.tabItem} onPress={() => router.push('/(tabs)/buscar')}>
                     <Ionicons name="search-outline" size={24} color="#000" />
                 </TouchableOpacity>
                 <TouchableOpacity style={dinheiroStyles.tabItem} onPress={() => router.push('./carrinho')}>
                     <Ionicons name="cart-outline" size={24} color="#000" />
                 </TouchableOpacity>
-                <TouchableOpacity style={dinheiroStyles.tabItem}>
+                <TouchableOpacity style={dinheiroStyles.tabItem} onPress={() => router.replace('/minha-conta')}>
                     <Ionicons name="person-outline" size={24} color="#000" />
                 </TouchableOpacity>
             </View>
@@ -161,8 +160,8 @@ const dinheiroStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: 15,
-        paddingTop: 40,
-        backgroundColor: '#FFF',
+        paddingTop: 20,
+        backgroundColor: '#E72C2C',
         borderBottomWidth: 1,
         borderBottomColor: '#EEE',
     },
@@ -180,6 +179,7 @@ const dinheiroStyles = StyleSheet.create({
         marginBottom: 5,
     },
     summaryText: {
+        fontWeight: 'bold',
         fontSize: 16,
         color: '#333',
     },
@@ -308,7 +308,7 @@ const dinheiroStyles = StyleSheet.create({
     tabBar: {
         flexDirection: 'row',
         height: 60,
-        backgroundColor: '#FFF',
+        backgroundColor: '#E72C2C',
         borderTopWidth: 1,
         borderTopColor: '#DDD',
         justifyContent: 'space-around',

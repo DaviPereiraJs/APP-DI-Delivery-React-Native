@@ -4,7 +4,10 @@ import { useRouter } from 'expo-router';
 
 // SOLUÇÃO DEFINITIVA DE IMAGEM:
 // Usamos uma URL da internet para o App nunca mais travar procurando arquivo local
-const LOGO_URL = 'https://cdn-icons-png.flaticon.com/512/3075/3075977.png';
+// const LOGO_URL = '';
+//const LOGO_URL = '../app/assets/imgLogo1.png'
+const burgerImage = require('../app/assets/imgLogo1.png'); 
+
 
 const LoginScreen: React.FC = () => {
     const router = useRouter();
@@ -38,7 +41,7 @@ const LoginScreen: React.FC = () => {
             <StatusBar barStyle="light-content" backgroundColor="#E72C2C" /> 
             
             {/* Imagem Online (Segura) */}
-            <Image source={{ uri: LOGO_URL }} style={styles.burgerImage} />
+             <Image source={burgerImage} style={styles.burgerImage} />
             
             <Text style={styles.titleText}>Login</Text>
             
@@ -89,7 +92,7 @@ const LoginScreen: React.FC = () => {
             <TouchableOpacity 
                 style={styles.forgotPassword}
                 // Se não tiver a tela recuperar-senha, comente a linha abaixo
-                // onPress={() => router.push('/recuperar-senha')}
+                onPress={() => router.push('/recuperar-senha')}
                 disabled={isLoading}
             >
                 <Text style={styles.linkText}>Esqueceu a senha?</Text>

@@ -45,13 +45,10 @@ const PagamentoPixScreen: React.FC = () => {
             <ScrollView contentContainerStyle={pixStyles.content}>
                 
                 {/* Seção de Resumo da Entrega (Topo) */}
+               
                 <View style={pixStyles.summarySection}>
-                    <Text style={pixStyles.summaryText}>Taxa de entrega:</Text>
-                    <Text style={pixStyles.summaryValue}>Taxa: X</Text>
-                </View>
-                <View style={pixStyles.summarySection}>
-                    <Text style={pixStyles.summaryText}>Total Final:</Text>
-                    <Text style={pixStyles.summaryValue}>R$ {TOTAL_FINAL.toFixed(2).replace('.', ',')} + X</Text>
+                    <Text style={pixStyles.summaryText}>Valor Final:</Text>
+                    <Text style={pixStyles.summaryValue}>R$ {TOTAL_FINAL.toFixed(2).replace('.', ',')}</Text>
                 </View>
 
                 {/* --- FORMAS DE PAGAMENTO --- */}
@@ -155,6 +152,7 @@ const pixStyles = StyleSheet.create({
         marginBottom: 5,
     },
     summaryText: {
+        fontWeight: 'bold',
         fontSize: 16,
         color: '#333',
     },

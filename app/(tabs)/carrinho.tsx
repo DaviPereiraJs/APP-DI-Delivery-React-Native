@@ -72,7 +72,7 @@ const CarrinhoScreen: React.FC = () => {
                     <Ionicons name="arrow-back" size={28} color="#000" />
                 </TouchableOpacity>
                 
-                <Text style={cartStyles.headerTitle}>Meu Carrinho</Text>
+                <Text style={cartStyles.headerTitle}>MEU CARRINHO</Text>
                 
                 {/* CORREÇÃO DO BOTÃO MENU */}
                 <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
@@ -152,7 +152,7 @@ const cartStyles = StyleSheet.create({
         paddingTop: 20,
         borderBottomWidth: 1,
         borderBottomColor: '#EEE',
-        backgroundColor: '#ff0000ff'
+        backgroundColor: '#E72C2C'
     },
     headerTitle: {
         fontSize: 20,

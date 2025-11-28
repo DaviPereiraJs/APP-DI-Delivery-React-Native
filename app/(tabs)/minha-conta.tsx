@@ -1,15 +1,17 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router'; // useRouter é mais seguro que router solto
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons'; 
+
+
 
 // Dados de Exemplo do Usuário
 const USER_NAME = 'Davi Nascimento';
 const USER_EMAIL = 'davi.nascimento@gmail.com';
 const USER_PHONE = '(88) 98152-2318';
 
-// CORREÇÃO CRÍTICA: Usando a imagem local ./logo.png
-const USER_ICON = require('../assets/LogoInicialApp.png'); 
+// Imagem de Perfil do Usuário
+const USER_ICON = require('../assets/Imagem do WhatsApp de 2025-11-25 à(s) 13.38.50_f195118b.jpg'); 
 
 // Definição da interface
 interface SettingsItemProps {
@@ -33,28 +35,36 @@ const MinhaContaScreen: React.FC = () => {
     const router = useRouter(); // Instância do router
 
     const handleEditProfile = () => {
-        alert('Navegar para a tela de edição de perfil');
+        // CORRIGIDO: Substituir alert() por uma navegação ou modal
+        console.log('Navegar para a tela de edição de perfil');
     };
     
+    // CORRIGIDO: Substituir alert() por uma navegação ou modal
     const handlePaymentMethods = () => {
-        alert('Navegar para Métodos de Pagamento');
+        console.log('Navegar para Métodos de Pagamento');
     };
 
+    // CORRIGIDO: Substituir alert() por uma navegação ou modal
     const handleAddresses = () => {
-        alert('Navegar para Endereços Salvos');
+        console.log('Navegar para Endereços Salvos');
     };
 
     return (
         <View style={contaStyles.fullContainer}>
-            <StatusBar barStyle="dark-content" backgroundColor="#FFF" /> 
+            {/* CORRIGIDO: BarStyle deve ser light-content pois o header é vermelho */}
+            <StatusBar barStyle="light-content" backgroundColor="#E72C2C" /> 
 
             {/* --- CABEÇALHO --- */}
             <View style={contaStyles.header}>
                 <TouchableOpacity onPress={() => router.back()}> 
-                    <Ionicons name="arrow-back" size={28} color="#000" />
+                    {/* Ícone branco no fundo vermelho */}
+                    <Ionicons name="arrow-back" size={28} color="#000000ff" /> 
                 </TouchableOpacity>
-                <Text style={contaStyles.headerTitle}>Minha Conta</Text>
+
+                {/* Título branco no fundo vermelho */}
+                <Text style={contaStyles.headerTitle}>MINHA CONTA</Text> 
                 <View style={{ width: 28 }} /> 
+                
             </View>
 
             {/* --- CONTEÚDO PRINCIPAL --- */}
@@ -62,8 +72,18 @@ const MinhaContaScreen: React.FC = () => {
                 
                 {/* Seção de Perfil/Dados */}
                 <View style={contaStyles.profileSection}>
-                    {/* Imagem Local Corrigida */}
-                    <Image source={USER_ICON} style={contaStyles.profileImage} />
+                    
+                    {/* NOVO CONTÊINER ENVOLVENDO A IMAGEM PARA O EFEITO CIRCULAR */}
+                    <View style={contaStyles.avatarWrapper}>
+                        {/* Imagem Local Corrigida */}
+                        <Image 
+                            source={USER_ICON} 
+                            style={contaStyles.profileImage} 
+                            // ESSENCIAL: Garante que a imagem preencha o contêiner.
+                            resizeMode="cover" 
+                        />
+                    </View>
+
                     <Text style={contaStyles.userName}>{USER_NAME}</Text>
                     <Text style={contaStyles.userEmail}>{USER_EMAIL}</Text>
                     <Text style={contaStyles.userPhone}>{USER_PHONE}</Text>
@@ -80,7 +100,7 @@ const MinhaContaScreen: React.FC = () => {
                     <SettingsItem 
                         icon="location-outline"
                         label="Meus Endereços"
-                        onPress={() => router.replace('./adicionar-localização')} 
+                        onPress={() => router.push('/adicionar-localização')} 
                     />
                     
                     <SettingsItem 
@@ -92,13 +112,13 @@ const MinhaContaScreen: React.FC = () => {
                     <SettingsItem 
                         icon="help-circle-outline"
                         label="Ajuda e Suporte"
-                        onPress={() => alert('Navegar para Ajuda')}
+                        onPress={() => console.log('Navegar para Ajuda')}
                     />
 
                     <SettingsItem 
                         icon="document-text-outline"
                         label="Termos de Serviço"
-                        onPress={() => alert('Navegar para Termos')}
+                        onPress={() => console.log('Navegar para Termos')}
                     />
                 </View>
 
@@ -108,30 +128,64 @@ const MinhaContaScreen: React.FC = () => {
                 </TouchableOpacity>
 
             </ScrollView>
+
+         <View style={contaStyles.tabBar}>
+                        <TouchableOpacity style={contaStyles.tabItem} onPress={() => router.replace('/(tabs)')}>
+                            <Ionicons name="home" size={24} color="#FFD000" />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={contaStyles.tabItem} onPress={() => router.push('/(tabs)/buscar')}>
+                            <Ionicons name="search-outline" size={24} color="#000" />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={contaStyles.tabItem} onPress={() => router.push('/carrinho')}>
+                            <Ionicons name="cart-outline" size={24} color="#000" />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={contaStyles.tabItem} onPress={() => router.push('/(tabs)/minha-conta')}>
+                            <Ionicons name="person-outline" size={24} color="#000" />
+                        </TouchableOpacity>
+                    </View>
+
         </View>
     );
 };
 
 // --- Estilos ---
+const AVATAR_SIZE = 80;
+
 const contaStyles = StyleSheet.create({
     fullContainer: {
         flex: 1,
         backgroundColor: '#F0F0F0',
+    },
+    topHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingTop: 15,
+        paddingBottom: 10,
+        backgroundColor: '#E72C2C',
+        elevation: 2,
+        color: '#000000ff'
+    },
+    logoText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#000000ff',
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: 15,
-        paddingTop: 20,
-        backgroundColor: '#E72C2C',
-        borderBottomWidth: 1,
-        borderBottomColor: '#EEE',
+        // CORRIGIDO: Usar paddingTop condicionalmente em produção ou Expo SDK 50+
+        paddingTop: 20, // Ajuste para acomodar a StatusBar
+        backgroundColor: '#E72C2C', // Fundo vermelho
+        // Removido borderBottom para visual limpo
     },
     headerTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#000',
+        color: '#000000ff', // Título branco
     },
     content: {
         padding: 15,
@@ -142,18 +196,27 @@ const contaStyles = StyleSheet.create({
         padding: 20,
         alignItems: 'center',
         marginBottom: 20,
-        elevation: 1,
+        elevation: 3,
         shadowColor: '#000',
-        shadowOpacity: 0.05,
+        shadowOpacity: 0.1,
         shadowRadius: 5,
+        shadowOffset: { width: 0, height: 2 },
+    },
+    // NOVO ESTILO: Contêiner do Círculo Vermelho (o aro)
+    avatarWrapper: {
+        width: AVATAR_SIZE + 10, // Um pouco maior que a imagem para fazer o aro
+        height: AVATAR_SIZE + 10,
+        borderRadius: (AVATAR_SIZE + 10) / 2,
+        backgroundColor: '#E72C2C', // Cor do aro vermelho
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 10,
+        overflow: 'hidden', // ESSENCIAL: Garante que a borda da imagem seja cortada
     },
     profileImage: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        backgroundColor: '#E72C2C',
-        resizeMode: 'contain',
-        marginBottom: 10,
+        width: AVATAR_SIZE,
+        height: AVATAR_SIZE,
+        borderRadius: AVATAR_SIZE / 2, 
     },
     userName: {
         fontSize: 22,
@@ -175,9 +238,8 @@ const contaStyles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 8,
         borderRadius: 20,
-        borderWidth: 1,
-        borderColor: '#FFD700',
-        backgroundColor: '#FFD700',
+        // CORRIGIDO: Não precisa de borderWidth se o fundo é a mesma cor da borda
+        backgroundColor: '#FFD700', 
     },
     editButtonText: {
         color: '#E72C2C',
@@ -188,10 +250,11 @@ const contaStyles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 20,
         paddingHorizontal: 10,
-        elevation: 1,
+        elevation: 3,
         shadowColor: '#000',
-        shadowOpacity: 0.05,
+        shadowOpacity: 0.1,
         shadowRadius: 5,
+        shadowOffset: { width: 0, height: 2 },
     },
     sectionTitle: {
         fontSize: 18,
@@ -225,12 +288,31 @@ const contaStyles = StyleSheet.create({
         borderRadius: 8,
         alignItems: 'center',
         marginBottom: 30,
+        elevation: 3,
+        shadowColor: '#E72C2C',
+        shadowOpacity: 0.4,
+        shadowRadius: 5,
+        shadowOffset: { width: 0, height: 2 },
     },
     logoutText: {
         color: '#FFF',
         fontSize: 18,
         fontWeight: 'bold',
-    }
+    },
+    tabBar: {
+        flexDirection: 'row',
+        height: 60,
+        backgroundColor: '#E72C2C',
+        borderTopWidth: 1,
+        borderTopColor: '#DDD',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+    },
+    tabItem: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 });
 
 export default MinhaContaScreen;

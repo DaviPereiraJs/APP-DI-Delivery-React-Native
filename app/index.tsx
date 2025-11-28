@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar } from 'reac
 import { router } from 'expo-router'; // Importação necessária para navegação
 
 // Certifique-se de que o caminho para sua imagem está correto
-const burgerImage = require('../app/assets/LogoInicialApp.png'); 
+const burgerImage = require('../app/assets/imgLogo1.png'); 
 
 const PresentationScreen: React.FC = () => {
   return (
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   logoText: {
     fontSize: 40,
     fontWeight: 'bold',
-    color: '#FFF', // Texto branco
+    color: '#000000ff', // Texto branco
     letterSpacing: 2,
     marginBottom: 20,
   },

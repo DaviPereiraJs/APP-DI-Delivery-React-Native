@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, StatusBar, 
 import { router } from 'expo-router'; // Importa a função de navegação do Expo Router
 
 // Certifique-se de que o caminho para sua imagem está correto
-const burgerImage = require('../app/assets/LogoInicialApp.png'); 
+const burgerImage = require('../app/assets/imgLogo1.png'); 
 
 const RecuperarSenhaScreen: React.FC = () => {
   const [email, setEmail] = useState('');
