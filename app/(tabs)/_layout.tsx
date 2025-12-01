@@ -236,6 +236,7 @@ const drawerStyles = StyleSheet.create({
         alignItems: 'center',
     },
     footerText: {
+        marginTop: 60,
         fontSize: 18,
         fontWeight: 'bold',
         color: '#E72C2C',
