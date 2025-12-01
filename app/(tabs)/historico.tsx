@@ -71,17 +71,17 @@ const HistoricoScreen: React.FC = () => {
 
             {/* BARRA DE NAVEGAÇÃO INFERIOR */}
             <View style={historyStyles.tabBar}>
-                <TouchableOpacity style={historyStyles.tabItem} onPress={() => router.replace('./home')}>
+                <TouchableOpacity style={historyStyles.tabItem} onPress={() => router.replace('./(tabs)')}>
                     <Ionicons name="home-outline" size={24} color="#000" />
                 </TouchableOpacity>
                 <TouchableOpacity style={historyStyles.tabItem}>
-                    <Ionicons name="search-outline" size={24} color="#000" />
+                    <Ionicons name="search-outline" size={24} color="#000" onPress={() => router.replace('./buscar')} />
                 </TouchableOpacity>
                 <TouchableOpacity style={historyStyles.tabItem} onPress={() => router.push('./carrinho')}>
                     <Ionicons name="cart-outline" size={24} color="#000" />
                 </TouchableOpacity>
                 <TouchableOpacity style={historyStyles.tabItem}>
-                    <Ionicons name="person-outline" size={24} color="#000" />
+                    <Ionicons name="person-outline" size={24} color="#000" onPress={() => router.push('./minha-conta')} />
                 </TouchableOpacity>
             </View>
         </View>

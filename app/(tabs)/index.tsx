@@ -75,12 +75,12 @@ const HomeScreen: React.FC = () => {
                 <View style={styles.searchArea}>
                     <View style={styles.locationInput}>
                         <Ionicons name="location-outline" size={20} color="#E72C2C" />
-                        <Text style={styles.locationText}>Buscar endereço de entrega</Text>
+                        <Text style={styles.locationText}>Informar endereço de entrega</Text>
                     </View>
                     
                     <TouchableOpacity 
                         style={styles.searchButton}
-                        onPress={() => router.push('/(tabs)/buscar')} 
+                        onPress={() => router.push('/(tabs)/adicionar-localizacao')} 
                     >
                         <Text style={styles.searchButtonText}>Buscar</Text>
                     </TouchableOpacity>

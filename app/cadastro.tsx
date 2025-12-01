@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   input: {
     width: '80%',
     height: 50,
-    backgroundColor: '#D3D3D3', // Fundo cinza claro
+    backgroundColor: '#fffefeff', // Fundo cinza claro
     borderRadius: 8,
     paddingHorizontal: 15,
     fontSize: 16,

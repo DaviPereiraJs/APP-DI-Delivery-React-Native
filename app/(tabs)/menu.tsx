@@ -63,6 +63,9 @@ const MenuScreen: React.FC = () => {
                 <TouchableOpacity onPress={() => router.back()}>
                     <Ionicons name="arrow-back" size={30} color="#000000ff" />
                 </TouchableOpacity>
+
+                <Text style={menuStyles.header1}>CARDAPIO</Text>
+                
                 
                 {/* Botão Menu */}
                 <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
@@ -118,6 +121,13 @@ const menuStyles = StyleSheet.create({
         alignItems: 'center',
         
     },
+
+    header1: {
+       fontSize: 20,
+       fontWeight: 'bold',
+       alignItems: 'center'
+    },
+
     bannerImage: {
         width: '100%',
         height: 200,

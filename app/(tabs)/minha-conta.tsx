@@ -100,7 +100,7 @@ const MinhaContaScreen: React.FC = () => {
                     <SettingsItem 
                         icon="location-outline"
                         label="Meus Endereços"
-                        onPress={() => router.push('/adicionar-localização')} 
+                        onPress={() => router.push('/adicionar-localizacao')} 
                     />
                     
                     <SettingsItem 

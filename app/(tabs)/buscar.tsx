@@ -86,14 +86,14 @@ const BuscarScreen: React.FC = () => {
 
             {/* --- CABEÇALHO E BARRA DE BUSCA --- */}
             <View style={searchStyles.header}>
-                <TextInput
-                    style={searchStyles.searchInput}
-                    placeholder="Busque por pratos, restaurantes ou cozinhas..."
-                    placeholderTextColor="#999"
-                    value={searchText}
-                    onChangeText={setSearchText}
-                    onSubmitEditing={handleSearch}
-                />
+
+                <TouchableOpacity onPress={() => router.back()}>
+                    <Ionicons name="arrow-back" size={28} color="#000" />
+                </TouchableOpacity>
+                
+                <Text style={searchStyles.sectionTitle1}>BUSCAR</Text>
+
+              
                 <TouchableOpacity style={searchStyles.searchIcon} onPress={handleSearch}>
                     <Ionicons name="search" size={24} color="#000000ff" />
                 </TouchableOpacity>
@@ -118,6 +118,16 @@ const BuscarScreen: React.FC = () => {
                 ) : (
                     /* Seção de Categorias Populares (quando não está buscando) */
                     <View>
+
+                          <TextInput
+                    style={searchStyles.searchInput}
+                    placeholder="Busque por pratos, restaurantes ou cozinhas..."
+                    placeholderTextColor="#999"
+                    value={searchText}
+                    onChangeText={setSearchText}
+                    onSubmitEditing={handleSearch}
+                />
+
                         <Text style={searchStyles.sectionTitle}>Categorias Populares</Text>
                         <FlatList
                             data={popularCategories}
@@ -172,19 +182,22 @@ const searchStyles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
-        paddingTop: 20,
-        backgroundColor: '#ffffffff',
+        paddingTop: 10,
+        backgroundColor: '#E72C2C',
         borderBottomWidth: 1,
         borderBottomColor: '#EEE',
     },
     searchInput: {
         flex: 1,
         backgroundColor: '#F0F0F0',
-        height: 45,
+        height: 50,
         borderRadius: 25,
         paddingHorizontal: 20,
         fontSize: 16,
+        marginTop: 10,
         marginRight: 10,
+        marginLeft: 13,
+        padding: 20
     },
     searchIcon: {
         padding: 5,
@@ -198,8 +211,19 @@ const searchStyles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333',
         marginBottom: 10,
-        marginTop: 10,
+        marginTop: 20,
     },
+
+     sectionTitle1: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#000000ff',
+        marginBottom: 10,
+        marginTop: 5,
+        marginLeft: 120,
+        marginRight: 115
+    },
+
     // Estilos de Categoria
     categoryRow: {
         justifyContent: 'space-between',

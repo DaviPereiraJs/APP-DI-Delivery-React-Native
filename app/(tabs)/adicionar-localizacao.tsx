@@ -64,7 +64,7 @@ const AdicionarLocalizacaoScreen: React.FC = () => {
                 <TouchableOpacity onPress={() => router.back()}>
                     <Ionicons name="arrow-back" size={28} color="#000" />
                 </TouchableOpacity>
-                <Text style={locationStyles.headerTitle}>Adicionar Localização</Text>
+                <Text style={locationStyles.headerTitle}>ADICIONAR LOCALIZAÇÃO</Text>
                 <View style={{ width: 28 }} /> 
             </View>
 
