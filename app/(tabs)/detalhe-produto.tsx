@@ -34,11 +34,11 @@ const DetalheProdutoScreen: React.FC = () => {
             {/* --- CABEÇALHO --- */}
             <View style={detailStyles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={detailStyles.iconButton}>
-                    <Ionicons name="arrow-back" size={30} color="#000000ff"/>
+                    <Ionicons name="arrow-back" size={30} color="#ffffffff"/>
                 </TouchableOpacity>
                 <Text style={detailStyles.logoText}>SOBRE O PRODUTO</Text>
                 <TouchableOpacity onPress={() => router.replace('/(tabs)/carrinho')} style={detailStyles.iconButton}>
-                    <Ionicons name="cart-outline" size={30} color="#000000ff" />
+                    <Ionicons name="cart-outline" size={30} color="#ffffffff" />
                 </TouchableOpacity>
                 
             </View>
@@ -133,7 +133,7 @@ const detailStyles = StyleSheet.create({
         marginTop: 10,
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#000000ff',
+        color: '#ffffffff',
     },
     content: {
         flex: 1,

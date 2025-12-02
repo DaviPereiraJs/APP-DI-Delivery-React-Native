@@ -88,14 +88,14 @@ const BuscarScreen: React.FC = () => {
             <View style={searchStyles.header}>
 
                 <TouchableOpacity onPress={() => router.back()}>
-                    <Ionicons name="arrow-back" size={28} color="#000" />
+                    <Ionicons name="arrow-back" size={28} color="#ffffffff" />
                 </TouchableOpacity>
                 
                 <Text style={searchStyles.sectionTitle1}>BUSCAR</Text>
 
               
                 <TouchableOpacity style={searchStyles.searchIcon} onPress={handleSearch}>
-                    <Ionicons name="search" size={24} color="#000000ff" />
+                    <Ionicons name="search" size={24} color="#ffffffff" />
                 </TouchableOpacity>
             </View>
 
@@ -156,16 +156,16 @@ const BuscarScreen: React.FC = () => {
             <View style={searchStyles.tabBar}>
                 {/* Home: '/(tabs)' é o caminho correto para o index */}
                 <TouchableOpacity style={searchStyles.tabItem} onPress={() => router.replace('/(tabs)')}>
-                    <Ionicons name="home-outline" size={24} color="#000" />
+                    <Ionicons name="home-outline" size={24} color="#ffffffff" />
                 </TouchableOpacity>
                 <TouchableOpacity style={searchStyles.tabItem}>
                     <Ionicons name="search" size={24} color="#FFD700" /> {/* Ativo */}
                 </TouchableOpacity>
                 <TouchableOpacity style={searchStyles.tabItem} onPress={() => router.push('/(tabs)/carrinho')}>
-                    <Ionicons name="cart-outline" size={24} color="#000" />
+                    <Ionicons name="cart-outline" size={24} color="#ffffffff" />
                 </TouchableOpacity>
                 <TouchableOpacity style={searchStyles.tabItem} onPress={() => router.push('/(tabs)/minha-conta')}>
-                    <Ionicons name="person-outline" size={24} color="#000" />
+                    <Ionicons name="person-outline" size={24} color="#ffffffff" />
                 </TouchableOpacity>
             </View>
         </View>
@@ -217,7 +217,7 @@ const searchStyles = StyleSheet.create({
      sectionTitle1: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#000000ff',
+        color: '#ffffffff',
         marginBottom: 10,
         marginTop: 5,
         marginLeft: 120,

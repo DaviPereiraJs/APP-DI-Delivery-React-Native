@@ -62,7 +62,7 @@ const AdicionarLocalizacaoScreen: React.FC = () => {
             {/* --- CABEÇALHO --- */}
             <View style={locationStyles.header}>
                 <TouchableOpacity onPress={() => router.back()}>
-                    <Ionicons name="arrow-back" size={28} color="#000" />
+                    <Ionicons name="arrow-back" size={28} color="#ffffffff" />
                 </TouchableOpacity>
                 <Text style={locationStyles.headerTitle}>ADICIONAR LOCALIZAÇÃO</Text>
                 <View style={{ width: 28 }} /> 
@@ -131,16 +131,16 @@ const AdicionarLocalizacaoScreen: React.FC = () => {
             {/* BARRA DE NAVEGAÇÃO INFERIOR */}
             <View style={locationStyles.tabBar}>
                 <TouchableOpacity style={locationStyles.tabItem} onPress={() => router.replace('/(tabs)')}>
-                    <Ionicons name="home-outline" size={24} color="#000" />
+                    <Ionicons name="home-outline" size={24} color="#ffffffff" />
                 </TouchableOpacity>
                 <TouchableOpacity style={locationStyles.tabItem} onPress={() => router.replace('/buscar')}>
-                    <Ionicons name="search-outline" size={24} color="#000" />
+                    <Ionicons name="search-outline" size={24} color="#ffffffff" />
                 </TouchableOpacity>
                 <TouchableOpacity style={locationStyles.tabItem} onPress={() => router.replace('/carrinho')}>
-                    <Ionicons name="cart-outline" size={24} color="#000" />
+                    <Ionicons name="cart-outline" size={24} color="#ffffffff" />
                 </TouchableOpacity>
                 <TouchableOpacity style={locationStyles.tabItem} onPress={() => router.replace('/minha-conta')}>
-                    <Ionicons name="person-outline" size={24} color="#000" />
+                    <Ionicons name="person-outline" size={24} color="#ffffffff" />
                 </TouchableOpacity>
             </View>
         </View>
@@ -166,7 +166,7 @@ const locationStyles = StyleSheet.create({
     headerTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#000',
+        color: '#ffffffff',
     },
     content: {
         padding: 15,

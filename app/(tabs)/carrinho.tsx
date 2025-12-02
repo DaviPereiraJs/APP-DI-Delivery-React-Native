@@ -67,14 +67,14 @@ const CarrinhoScreen: React.FC = () => {
             {/* --- CABEÇALHO --- */}
             <View style={cartStyles.header}>
                 <TouchableOpacity onPress={() => router.back()}>
-                    <Ionicons name="arrow-back" size={28} color="#000" />
+                    <Ionicons name="arrow-back" size={28} color="#fff" />
                 </TouchableOpacity>
                 
                 <Text style={cartStyles.headerTitle}>MEU CARRINHO</Text>
                 
                 {/* CORREÇÃO DO BOTÃO MENU */}
                 <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
-                    <Ionicons name="menu" size={30} color="#000000ff" />
+                    <Ionicons name="menu" size={30} color="#fff" />
                 </TouchableOpacity>
             </View>
 
@@ -121,16 +121,16 @@ const CarrinhoScreen: React.FC = () => {
 
              <View style={cartStyles.tabBar}>
                             <TouchableOpacity style={cartStyles.tabItem} onPress={() => router.replace('/(tabs)')}>
-                                <Ionicons name="home" size={24} color="#000" />
+                                <Ionicons name="home" size={24} color="#fff" />
                             </TouchableOpacity>
                             <TouchableOpacity style={cartStyles.tabItem} onPress={() => router.push('/(tabs)/buscar')}>
-                                <Ionicons name="search-outline" size={24} color="#000" />
+                                <Ionicons name="search-outline" size={24} color="#fff" />
                             </TouchableOpacity>
                             <TouchableOpacity style={cartStyles.tabItem} onPress={() => router.push('/carrinho')}>
                                 <Ionicons name="cart-outline" size={24} color="#FFD000" />
                             </TouchableOpacity>
                             <TouchableOpacity style={cartStyles.tabItem} onPress={() => router.push('/(tabs)/minha-conta')}>
-                                <Ionicons name="person-outline" size={24} color="#000" />
+                                <Ionicons name="person-outline" size={24} color="#fff" />
                             </TouchableOpacity>
                         </View>
 
@@ -155,6 +155,7 @@ const cartStyles = StyleSheet.create({
         backgroundColor: '#E72C2C'
     },
     headerTitle: {
+        color: '#fff',
         fontSize: 20,
         fontWeight: 'bold',
         alignItems: 'center'

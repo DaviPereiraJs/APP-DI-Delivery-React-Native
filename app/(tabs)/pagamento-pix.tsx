@@ -35,9 +35,9 @@ const PagamentoPixScreen: React.FC = () => {
             {/* --- CABEÇALHO --- */}
             <View style={pixStyles.header}>
                 <TouchableOpacity onPress={() => router.back()}>
-                    <Ionicons name="arrow-back" size={28} color="#000" />
+                    <Ionicons name="arrow-back" size={28} color="#ffffffff" />
                 </TouchableOpacity>
-                <Text style={pixStyles.headerTitle}>Pagamento</Text>
+                <Text style={pixStyles.headerTitle}>PAGAMENTO</Text>
                 <View style={{ width: 28 }} /> {/* Espaçador */}
             </View>
 
@@ -106,16 +106,16 @@ const PagamentoPixScreen: React.FC = () => {
             {/* BARRA DE NAVEGAÇÃO INFERIOR (Replicada da Home) */}
             <View style={pixStyles.tabBar}>
                 <TouchableOpacity style={pixStyles.tabItem} onPress={() => router.replace('./home')}>
-                    <Ionicons name="home-outline" size={24} color="#000" />
+                    <Ionicons name="home-outline" size={24} color="#ffffffff" />
                 </TouchableOpacity>
                 <TouchableOpacity style={pixStyles.tabItem}>
-                    <Ionicons name="search-outline" size={24} color="#000" />
+                    <Ionicons name="search-outline" size={24} color="#ffffffff" />
                 </TouchableOpacity>
                 <TouchableOpacity style={pixStyles.tabItem} onPress={() => router.push('./carrinho')}>
-                    <Ionicons name="cart-outline" size={24} color="#000" />
+                    <Ionicons name="cart-outline" size={24} color="#ffffffff" />
                 </TouchableOpacity>
                 <TouchableOpacity style={pixStyles.tabItem}>
-                    <Ionicons name="person-outline" size={24} color="#000" />
+                    <Ionicons name="person-outline" size={24} color="#ffffffff" />
                 </TouchableOpacity>
             </View>
         </View>
@@ -141,7 +141,7 @@ const pixStyles = StyleSheet.create({
     headerTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#000',
+        color: '#ffffffff',
     },
     content: {
         padding: 20,

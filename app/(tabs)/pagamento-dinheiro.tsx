@@ -45,9 +45,9 @@ const PagamentoDinheiroScreen: React.FC = () => {
             {/* --- CABEÇALHO --- */}
             <View style={dinheiroStyles.header}>
                 <TouchableOpacity onPress={() => router.back()}>
-                    <Ionicons name="arrow-back" size={28} color="#000" />
+                    <Ionicons name="arrow-back" size={28} color="#ffffffff" />
                 </TouchableOpacity>
-                <Text style={dinheiroStyles.headerTitle}>Pagamento</Text>
+                <Text style={dinheiroStyles.headerTitle}>PAGAMENTO</Text>
                 <View style={{ width: 28 }} />
             </View>
 
@@ -133,16 +133,16 @@ const PagamentoDinheiroScreen: React.FC = () => {
             {/* BARRA DE NAVEGAÇÃO INFERIOR */}
             <View style={dinheiroStyles.tabBar}>
                 <TouchableOpacity style={dinheiroStyles.tabItem} onPress={() => router.replace('/(tabs)')}>
-                    <Ionicons name="home-outline" size={24} color="#000" />
+                    <Ionicons name="home-outline" size={24} color="#ffffffff" />
                 </TouchableOpacity>
                 <TouchableOpacity style={dinheiroStyles.tabItem} onPress={() => router.push('/(tabs)/buscar')}>
-                    <Ionicons name="search-outline" size={24} color="#000" />
+                    <Ionicons name="search-outline" size={24} color="#ffffffff" />
                 </TouchableOpacity>
                 <TouchableOpacity style={dinheiroStyles.tabItem} onPress={() => router.push('./carrinho')}>
-                    <Ionicons name="cart-outline" size={24} color="#000" />
+                    <Ionicons name="cart-outline" size={24} color="#ffffffff" />
                 </TouchableOpacity>
                 <TouchableOpacity style={dinheiroStyles.tabItem} onPress={() => router.replace('/minha-conta')}>
-                    <Ionicons name="person-outline" size={24} color="#000" />
+                    <Ionicons name="person-outline" size={24} color="#ffffffff" />
                 </TouchableOpacity>
             </View>
         </View>
@@ -168,7 +168,7 @@ const dinheiroStyles = StyleSheet.create({
     headerTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#000',
+        color: '#ffffffff',
     },
     content: {
         padding: 20,

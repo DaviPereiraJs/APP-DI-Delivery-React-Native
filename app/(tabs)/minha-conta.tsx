@@ -58,12 +58,12 @@ const MinhaContaScreen: React.FC = () => {
             <View style={contaStyles.header}>
                 <TouchableOpacity onPress={() => router.back()}> 
                     {/* Ícone branco no fundo vermelho */}
-                    <Ionicons name="arrow-back" size={28} color="#000000ff" /> 
+                    <Ionicons name="arrow-back" size={28} color="#ffffffff" /> 
                 </TouchableOpacity>
 
                 {/* Título branco no fundo vermelho */}
                 <Text style={contaStyles.headerTitle}>MINHA CONTA</Text> 
-                <View style={{ width: 28 }} /> 
+                <View style={{ width: 28}} /> 
                 
             </View>
 
@@ -131,13 +131,13 @@ const MinhaContaScreen: React.FC = () => {
 
          <View style={contaStyles.tabBar}>
                         <TouchableOpacity style={contaStyles.tabItem} onPress={() => router.replace('/(tabs)')}>
-                            <Ionicons name="home" size={24} color="#000" />
+                            <Ionicons name="home" size={24} color="#edededff" />
                         </TouchableOpacity>
                         <TouchableOpacity style={contaStyles.tabItem} onPress={() => router.push('/(tabs)/buscar')}>
-                            <Ionicons name="search-outline" size={24} color="#000" />
+                            <Ionicons name="search-outline" size={24} color="#ffffffff" />
                         </TouchableOpacity>
                         <TouchableOpacity style={contaStyles.tabItem} onPress={() => router.push('/carrinho')}>
-                            <Ionicons name="cart-outline" size={24} color="#000" />
+                            <Ionicons name="cart-outline" size={24} color="#ffffffff" />
                         </TouchableOpacity>
                         <TouchableOpacity style={contaStyles.tabItem} onPress={() => router.push('/(tabs)/minha-conta')}>
                             <Ionicons name="person-outline" size={24} color="#FFD700" />
@@ -185,7 +185,7 @@ const contaStyles = StyleSheet.create({
     headerTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#000000ff', // Título branco
+        color: '#ffffffff', // Título branco
     },
     content: {
         padding: 15,

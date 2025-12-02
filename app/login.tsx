@@ -43,7 +43,7 @@ const LoginScreen: React.FC = () => {
             {/* Imagem Online (Segura) */}
              <Image source={burgerImage} style={styles.burgerImage} />
             
-            <Text style={styles.titleText}>Login</Text>
+            <Text style={styles.titleText}>LOGIN</Text>
             
             {/* Campo E-mail */}
             <TextInput

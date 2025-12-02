@@ -46,7 +46,7 @@ const CadastroScreen: React.FC = () => {
         
         <Image source={burgerImage} style={styles.burgerImage} />
         
-        <Text style={styles.titleText}>Cadastro</Text>
+        <Text style={styles.titleText}>CADASTRO</Text>
         
         {/* Campos de Input */}
         <TextInput

@@ -61,7 +61,7 @@ const MenuScreen: React.FC = () => {
             {/* --- CABEÇALHO --- */}
             <View style={menuStyles.header}>
                 <TouchableOpacity onPress={() => router.back()}>
-                    <Ionicons name="arrow-back" size={30} color="#000000ff" />
+                    <Ionicons name="arrow-back" size={30} color="#fff" />
                 </TouchableOpacity>
 
                 <Text style={menuStyles.header1}>CARDAPIO</Text>
@@ -69,7 +69,7 @@ const MenuScreen: React.FC = () => {
                 
                 {/* Botão Menu */}
                 <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
-                    <Ionicons name="menu" size={30} color="#000000ff" /> 
+                    <Ionicons name="menu" size={30} color="#fff" /> 
                 </TouchableOpacity>
             </View>
 
@@ -123,6 +123,7 @@ const menuStyles = StyleSheet.create({
     },
 
     header1: {
+       color: '#fff',
        fontSize: 20,
        fontWeight: 'bold',
        alignItems: 'center'

@@ -32,7 +32,7 @@ const RecuperarSenhaScreen: React.FC = () => {
         
         <Image source={burgerImage} style={styles.burgerImage} />
         
-        <Text style={styles.titleText}>Recuperar Senha</Text>
+        <Text style={styles.titleText}>RECUPERAR SENHA</Text>
 
         {/* Campo E-mail (Para confirmar a conta) */}
         <TextInput

@@ -48,11 +48,11 @@ const HomeScreen: React.FC = () => {
             {/* --- NOVO CABEÇALHO COM BOTÃO MENU --- */}
             <View style={styles.topHeader}>
                 <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
-                    <Ionicons name="menu" size={30} color="#000000ff" />
+                    <Ionicons name="menu" size={30} color="#ffffffff" />
                 </TouchableOpacity>
                 <Text style={styles.logoText}>DI DELIVERY</Text>
                 <TouchableOpacity onPress={() => router.push('/carrinho')}>
-                     <Ionicons name="cart-outline" size={28} color="#000000ff" />
+                     <Ionicons name="cart-outline" size={28} color="#ffffffff" />
                 </TouchableOpacity>
             </View>
 
@@ -112,13 +112,13 @@ const HomeScreen: React.FC = () => {
                     <Ionicons name="home" size={24} color="#FFD000" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.tabItem} onPress={() => router.push('/(tabs)/buscar')}>
-                    <Ionicons name="search-outline" size={24} color="#000" />
+                    <Ionicons name="search-outline" size={24} color="#fff" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.tabItem} onPress={() => router.push('/carrinho')}>
-                    <Ionicons name="cart-outline" size={24} color="#000" />
+                    <Ionicons name="cart-outline" size={24} color="#fff" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.tabItem} onPress={() => router.push('/(tabs)/minha-conta')}>
-                    <Ionicons name="person-outline" size={24} color="#000" />
+                    <Ionicons name="person-outline" size={24} color="#fff" />
                 </TouchableOpacity>
             </View>
         </View>
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     logoText: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#000000ff',
+        color: '#ffffffff',
     },
     contentContainer: {
         flex: 1,
