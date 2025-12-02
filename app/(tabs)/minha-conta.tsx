@@ -131,7 +131,7 @@ const MinhaContaScreen: React.FC = () => {
 
          <View style={contaStyles.tabBar}>
                         <TouchableOpacity style={contaStyles.tabItem} onPress={() => router.replace('/(tabs)')}>
-                            <Ionicons name="home" size={24} color="#FFD000" />
+                            <Ionicons name="home" size={24} color="#000" />
                         </TouchableOpacity>
                         <TouchableOpacity style={contaStyles.tabItem} onPress={() => router.push('/(tabs)/buscar')}>
                             <Ionicons name="search-outline" size={24} color="#000" />
@@ -140,7 +140,7 @@ const MinhaContaScreen: React.FC = () => {
                             <Ionicons name="cart-outline" size={24} color="#000" />
                         </TouchableOpacity>
                         <TouchableOpacity style={contaStyles.tabItem} onPress={() => router.push('/(tabs)/minha-conta')}>
-                            <Ionicons name="person-outline" size={24} color="#000" />
+                            <Ionicons name="person-outline" size={24} color="#FFD700" />
                         </TouchableOpacity>
                     </View>
 

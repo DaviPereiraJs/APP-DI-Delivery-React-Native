@@ -119,7 +119,7 @@ const BuscarScreen: React.FC = () => {
                     /* Seção de Categorias Populares (quando não está buscando) */
                     <View>
 
-                          <TextInput
+                    <TextInput
                     style={searchStyles.searchInput}
                     placeholder="Busque por pratos, restaurantes ou cozinhas..."
                     placeholderTextColor="#999"

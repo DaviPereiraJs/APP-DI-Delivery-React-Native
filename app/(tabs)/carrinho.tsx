@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar, ScrollView } from 'react-native'; 
 import { router, useNavigation } from 'expo-router'; // 1. Importar useNavigation
 import { Ionicons } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native'; // 2. Importar Ações do Drawer
@@ -15,7 +15,7 @@ interface CartItemData {
 interface CartItemProps {
     item: CartItemData;
 }
-// ----------------------------
+
 
 // Dados de exemplo do carrinho
 const cartItems: CartItemData[] = [
@@ -23,19 +23,17 @@ const cartItems: CartItemData[] = [
     { id: '2', name: 'X-Tudão', price: 20.00, quantity: 1 },
 ];
 
+// cauculo automatico
 const TAXA_ENTREGA = 5.00;
 const SUB_TOTAL = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 const TOTAL_FINAL = SUB_TOTAL + TAXA_ENTREGA;
 
 
-// Componente para renderizar um item do carrinho
+// Componente para renderizar cada item do carrinho
 const CartItem: React.FC<CartItemProps> = ({ item }) => (
     <View style={cartStyles.cartItemContainer}>
         {/* Imagem do Produto */}
         <Image
-            // CORREÇÃO DE CAMINHO:
-            // O arquivo está em app/(tabs)/carrinho.tsx
-            // .. (sai de tabs) -> .. (sai de app) -> entra em assets
             source={require('../assets/LogoInicialApp.png')}
             style={cartStyles.burgerImage}
         />
@@ -57,7 +55,7 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => (
     </View>
 );
 
-
+// controlodor do Drawer 
 const CarrinhoScreen: React.FC = () => {
     // Hook de navegação para controlar o Drawer
     const navigation = useNavigation(); 
@@ -84,9 +82,12 @@ const CarrinhoScreen: React.FC = () => {
             <ScrollView style={cartStyles.listContainer}>
                 
                 {/* Lista de Itens */}
+                {/* percorre os itens do carrinho e mostra cada um usando o componente */}
+
                 {cartItems.map(item => (
                     <CartItem key={item.id} item={item} />
                 ))}
+                
                 
                 
                 
@@ -114,7 +115,6 @@ const CarrinhoScreen: React.FC = () => {
             <TouchableOpacity
                 style={cartStyles.checkoutButton}
                 onPress={() => router.push('/pagamento-pix')}
-                 // Certifique-se que o caminho começa com /
             >
                 <Text style={cartStyles.checkoutButtonText}>Escolher Forma de Pagamento</Text>
             </TouchableOpacity>
@@ -233,9 +233,12 @@ const cartStyles = StyleSheet.create({
     checkoutButton: {
         backgroundColor: '#FFD700', 
         paddingVertical: 18,
+        borderRadius: 10,
+        marginBottom: 30,
+        marginLeft: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        width: '100%',
+        width: '90%',
     },
     checkoutButtonText: {
         fontSize: 18,
