@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, StatusBar, ScrollView } from 'react-native';
 import { router } from 'expo-router'; // Importa a função de navegação do Expo Router
 
-// Certifique-se de que o caminho para sua imagem está correto
 const burgerImage = require('../app/assets/imgLogo1.png'); 
 
 const RecuperarSenhaScreen: React.FC = () => {
@@ -14,7 +13,7 @@ const RecuperarSenhaScreen: React.FC = () => {
     // 1. Verificar se as senhas são iguais
     if (newPassword !== confirmPassword) {
       console.log('Erro: As senhas não coincidem!');
-      alert('As senhas não coincidem!'); // Alerta simples para feedback
+      alert('As senhas não coincidem!'); // alerta simples para feedback
       return;
     }
     
