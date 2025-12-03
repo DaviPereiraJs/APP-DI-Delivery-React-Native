@@ -239,10 +239,10 @@ const contaStyles = StyleSheet.create({
         paddingVertical: 8,
         borderRadius: 20,
         // CORRIGIDO: Não precisa de borderWidth se o fundo é a mesma cor da borda
-        backgroundColor: '#FFD700', 
+        backgroundColor: '#E72C2C', 
     },
     editButtonText: {
-        color: '#E72C2C',
+        color: '#ffffffff',
         fontWeight: 'bold',
     },
     settingsSection: {

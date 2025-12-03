@@ -16,7 +16,7 @@ const ConfimacaoPedidoScreen: React.FC = () => {
             {/* --- CONTEÚDO PRINCIPAL (FUNDO VERMELHO) --- */}
             <View style={confirmStyles.contentArea}>
                 
-                <Ionicons name="checkmark-circle-outline" size={100} color="#FFD700" />
+                <Ionicons name="checkmark-circle-outline" size={100} color="#ffffffff" />
                 
                 <Text style={confirmStyles.mainTitle}>Pedido Realizado com Sucesso!</Text>
                 <Text style={confirmStyles.orderIdText}>Seu pedido {ORDER_ID} foi enviado para a cozinha.</Text>
@@ -72,7 +72,7 @@ const confirmStyles = StyleSheet.create({
     },
     orderIdText: {
         fontSize: 18,
-        color: '#FFD700', // Amarelo
+        color: '#ffffffff', // Amarelo
         textAlign: 'center',
         marginBottom: 30,
     },
@@ -98,7 +98,7 @@ const confirmStyles = StyleSheet.create({
         marginTop: 5,
     },
     trackButton: {
-        backgroundColor: '#FFD700', // Amarelo
+        backgroundColor: '#ffffffff', // Amarelo
         paddingVertical: 18,
         alignItems: 'center',
         borderRadius: 8,
