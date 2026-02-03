@@ -1,40 +1,84 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, StatusBar, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  Image, 
+  TouchableOpacity, 
+  TextInput, 
+  StatusBar, 
+  ScrollView, 
+  ActivityIndicator, 
+  Alert,
+  Platform // Importante para o alerta na Web
+} from 'react-native';
 import { router } from 'expo-router';
-import { registerUser } from '../api/auth'; // Importa a API simulada
+
+// --- 1. NOVAS IMPORTAÇÕES DO FIREBASE ---
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../services/firebaseConfig'; // Verifique se o caminho ".." está certo
 
 // Certifique-se de que o caminho para sua imagem está correto
-// const burgerImage = require('../app/assets/LogoInicialApp.png'); 
-// const LOGO_URL = 'https://cdn-icons-png.flaticon.com/512/3075/3075977.png'
 const burgerImage = require('../app/assets/imgLogo1.png'); 
-
 
 const CadastroScreen: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // Novo estado de carregamento
+  const [isLoading, setIsLoading] = useState(false);
+
+  // --- 2. ALERTAS QUE FUNCIONAM NA WEB E NO CELULAR ---
+  const showAlert = (title: string, message: string) => {
+    if (Platform.OS === 'web') {
+      window.alert(`${title}\n\n${message}`);
+    } else {
+      Alert.alert(title, message);
+    }
+  };
 
   const handleCadastro = async () => {
     if (!name || !email || !password) {
-        Alert.alert('Erro', 'Por favor, preencha todos os campos.');
-        return;
+        return showAlert('Erro', 'Por favor, preencha todos os campos.');
     }
 
     setIsLoading(true);
 
     try {
-        const result = await registerUser(name, email, password);
+        // PASSO A: Cria o usuário no Firebase Auth
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
 
-        if (result === true) {
-            Alert.alert('Sucesso', 'Cadastro realizado com sucesso! Faça login para continuar.');
-            router.replace('/login'); 
+        // PASSO B: Atualiza o nome do perfil
+        await updateProfile(user, { displayName: name });
+
+        // PASSO C: Salva os dados no Banco de Dados (Firestore)
+        await setDoc(doc(db, "users", user.uid), {
+            uid: user.uid,
+            name: name,
+            email: email,
+            role: "cliente",
+            createdAt: new Date().toISOString(),
+        });
+
+        showAlert('Sucesso', 'Cadastro realizado! Bem-vindo.');
+        
+        // Redireciona direto para o App (não precisa fazer login de novo)
+        router.replace('/(tabs)'); 
+
+    } catch (error: any) {
+        console.log("Erro Cadastro:", error.code);
+        
+        const code = error.code;
+        if (code === 'auth/email-already-in-use') {
+            showAlert('Erro', 'Este e-mail já está cadastrado.');
+        } else if (code === 'auth/weak-password') {
+            showAlert('Senha Fraca', 'A senha deve ter pelo menos 6 caracteres.');
+        } else if (code === 'auth/invalid-email') {
+            showAlert('Erro', 'Formato de e-mail inválido.');
         } else {
-            // Exibe mensagem de erro da API simulada (email já existe, senha curta, etc.)
-            Alert.alert('Erro no Cadastro', result);
+            showAlert('Erro', 'Não foi possível cadastrar. Tente novamente.');
         }
-    } catch (error) {
-        Alert.alert('Erro de Rede', 'Não foi possível conectar ao servidor. Tente novamente.');
     } finally {
         setIsLoading(false);
     }
@@ -105,11 +149,11 @@ const CadastroScreen: React.FC = () => {
   );
 };
 
-// --- Estilos ---
+// --- Estilos (Mantidos Iguais) ---
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
-    backgroundColor: '#E72C2C', // Fundo vermelho
+    backgroundColor: '#E72C2C', 
     alignItems: 'center',
     paddingTop: 50,
     paddingBottom: 30,
@@ -129,16 +173,16 @@ const styles = StyleSheet.create({
   input: {
     width: '80%',
     height: 50,
-    backgroundColor: '#fffefeff', // Fundo cinza claro
+    backgroundColor: '#fffefeff', 
     borderRadius: 8,
     paddingHorizontal: 15,
     fontSize: 16,
     marginBottom: 20,
-    color: '#000', // Cor do texto digitado
+    color: '#000', 
   },
   registerButton: {
     width: '80%',
-    backgroundColor: '#FFD700', // Botão amarelo
+    backgroundColor: '#FFD700', 
     paddingVertical: 15,
     borderRadius: 8,
     marginTop: 10,
@@ -149,7 +193,7 @@ const styles = StyleSheet.create({
   registerButtonText: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#E72C2C', // Texto vermelho no botão
+    color: '#E72C2C', 
     textTransform: 'uppercase',
   },
   secondaryActions: {
@@ -161,7 +205,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   linkText: {
-    color: '#FFD700', // Texto amarelo para links
+    color: '#FFD700', 
     fontSize: 14,
     fontWeight: 'bold',
     textDecorationLine: 'underline',

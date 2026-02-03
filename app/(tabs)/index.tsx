@@ -1,286 +1,567 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar, ScrollView, FlatList } from 'react-native';
-import { useRouter, useNavigation } from 'expo-router'; // Adicionado useNavigation
-import { Ionicons } from '@expo/vector-icons'; 
-import { DrawerActions } from '@react-navigation/native'; // Necessário para abrir o menu
+import { Ionicons } from "@expo/vector-icons";
+import { DrawerActions } from "@react-navigation/native";
+import { useNavigation, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import {
+    ActivityIndicator,
+    Dimensions,
+    FlatList,
+    Image,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
+} from "react-native";
 
-// --- INTERFACES DE TIPAGEM ---
+// --- IMPORTAÇÃO DO FIREBASE ---
+import { collection, getDocs, limit, query } from "firebase/firestore";
+import { db } from "../../services/firebaseConfig";
+
+const { width } = Dimensions.get("window");
+
 interface BurgerData {
-    id: string;
-    name: string;
-    price: string;
+  id: string;
+  nome: string;
+  preco: number;
+  imagem_url?: string;
 }
-
-interface RenderItemProps {
-    item: BurgerData;
-}
-// ----------------------------
-
-// Dados de exemplo
-const DUMMY_BURGERS: BurgerData[] = [
-    { id: '1', name: 'X-Burguer Simples', price: 'R$ 15,00' },
-    { id: '2', name: 'X-Salada Tradicional', price: 'R$ 18,00' },
-    { id: '3', name: 'X-Bacon Especial', price: 'R$ 22,00' },
-    { id: '4', name: 'X-Egg', price: 'R$ 16,00' },
-];
 
 const HomeScreen: React.FC = () => {
-    const router = useRouter();
-    const navigation = useNavigation(); // Hook para controlar o Drawer
+  const router = useRouter();
+  const navigation = useNavigation();
+  const [highlights, setHighlights] = useState<BurgerData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    const renderItem = ({ item }: { item: BurgerData }) => (
-        <TouchableOpacity 
-            style={styles.productCard}
-            // Se a tela de detalhe não existir, comente a linha abaixo para não travar
-            // onPress={() => router.push('/(tabs)/detalhe-produto')} 
-        >
-            {/* CORREÇÃO: Usando a imagem local ./logo.png */}
-            <Image source={require('../assets/LogoInicialApp.png')} style={styles.productImage} /> 
-            <Text style={styles.productName}>{item.name}</Text>
-            <Text style={styles.productPrice}>{item.price}</Text>
-        </TouchableOpacity>
-    );
+  // --- CARREGAMENTO DE DADOS DO FIREBASE ---
+  useEffect(() => {
+    const fetchHighlights = async () => {
+      try {
+        const q = query(collection(db, "products"), limit(4));
+        const querySnapshot = await getDocs(q);
 
-    return (
-        <View style={styles.fullContainer}>
-            <StatusBar barStyle="dark-content" backgroundColor="#FFF" /> 
+        const productsList: BurgerData[] = [];
 
-            {/* --- NOVO CABEÇALHO COM BOTÃO MENU --- */}
-            <View style={styles.topHeader}>
-                <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
-                    <Ionicons name="menu" size={30} color="#ffffffff" />
-                </TouchableOpacity>
-                <Text style={styles.logoText}>DI DELIVERY</Text>
-                <TouchableOpacity onPress={() => router.push('/carrinho')}>
-                     <Ionicons name="cart-outline" size={28} color="#ffffffff" />
-                </TouchableOpacity>
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          productsList.push({
+            id: doc.id,
+            nome: data.name || data.nome || "Produto sem nome",
+            preco: Number(data.price || data.preco || 0),
+            imagem_url: data.image_url || data.imagem_url || null,
+          });
+        });
+
+        setHighlights(productsList);
+      } catch (error) {
+        console.error("Erro ao buscar destaques do Firebase:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHighlights();
+  }, []);
+
+  const renderHeader = () => (
+    <View>
+      {/* CABEÇALHO CURVO */}
+      <View style={styles.curvedHeader}>
+        <View style={styles.headerTopRow}>
+          <TouchableOpacity
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+            style={styles.iconButton}
+          >
+            <Ionicons name="menu" size={28} color="#FFF" />
+          </TouchableOpacity>
+
+          <View style={styles.headerTitles}>
+            <Text style={styles.appTitle}>DI DELIVERY</Text>
+            <View style={styles.locationRow}>
+              <Ionicons name="location-sharp" size={14} color="#FFD700" />
+              <Text style={styles.locationText}>Boa Viagem, CE</Text>
+              <Ionicons name="chevron-down" size={12} color="#FFF" />
             </View>
+          </View>
 
-            <ScrollView style={styles.contentContainer}>
-                
-                <Text style={styles.headerTitle}>Tudo pra facilitar o seu dia</Text>
-                <Text style={styles.headerSubtitle}>Aquilo que você mais procura está aqui!</Text>
-                
-                {/* Seção dos círculos de hambúrguer */}
-                <View style={styles.circleContainer}>
-                    {DUMMY_BURGERS.slice(0, 5).map(burger => (
-                        <View key={burger.id} style={styles.productCircle}>
-                            {/* CORREÇÃO: Usando a imagem local ./logo.png */}
-                            <Image source={require('../assets/imgPizza.png')} style={styles.circleImage} />
-                        </View>
-                    ))}
-                </View>
-
-                {/* Área de Busca e Localização */}
-                <View style={styles.searchArea}>
-                    <View style={styles.locationInput}>
-                        <Ionicons name="location-outline" size={20} color="#E72C2C" />
-                        <Text style={styles.locationText}>Informar endereço de entrega</Text>
-                    </View>
-                    
-                    <TouchableOpacity 
-                        style={styles.searchButton}
-                        onPress={() => router.push('/(tabs)/adicionar-localizacao')} 
-                    >
-                        <Text style={styles.searchButtonText}>Buscar</Text>
-                    </TouchableOpacity>
-                </View>
-
-                {/* Seção PEÇA JÁ O SEU! */}
-                <Text style={styles.sectionTitle}>PEÇA JÁ O SEU!</Text>
-
-                {/* Listagem de Produtos */}
-                <FlatList
-                    data={DUMMY_BURGERS}
-                    renderItem={renderItem} 
-                    keyExtractor={item => item.id}
-                    numColumns={2}
-                    columnWrapperStyle={styles.row}
-                    scrollEnabled={false} 
-                />
-
-                {/* Banner de Desconto */}
-                <View style={styles.discountBanner}>
-                    <Text style={styles.discountText}>50% de desconto na 1ª compra!</Text>
-                </View>
-
-            </ScrollView>
-
-            {/* --- FOOTER/TAB BAR --- */}
-            <View style={styles.tabBar}>
-                <TouchableOpacity style={styles.tabItem} onPress={() => router.replace('/(tabs)')}>
-                    <Ionicons name="home" size={24} color="#FFD000" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.tabItem} onPress={() => router.push('/(tabs)/buscar')}>
-                    <Ionicons name="search-outline" size={24} color="#fff" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.tabItem} onPress={() => router.push('/carrinho')}>
-                    <Ionicons name="cart-outline" size={24} color="#fff" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.tabItem} onPress={() => router.push('/(tabs)/minha-conta')}>
-                    <Ionicons name="person-outline" size={24} color="#fff" />
-                </TouchableOpacity>
-            </View>
+          <TouchableOpacity
+            onPress={() => router.push("/carrinho")}
+            style={styles.iconButton}
+          >
+            <Ionicons name="cart-outline" size={28} color="#FFF" />
+            {/* Bolinha de notificação fake para charme */}
+            <View style={styles.badge} />
+          </TouchableOpacity>
         </View>
-    );
+
+        {/* Título de Boas Vindas */}
+        <Text style={styles.welcomeText}>O que vamos comer hoje?</Text>
+      </View>
+
+      {/* BUSCA FLUTUANTE (Sobrepõe o header) */}
+      <View style={styles.floatingSearchContainer}>
+        <TouchableOpacity
+          style={styles.searchBar}
+          onPress={() => router.push("/buscar")} // Ajuste a rota se necessário
+          activeOpacity={0.9}
+        >
+          <Ionicons name="search" size={20} color="#E72C2C" />
+          <Text style={styles.searchPlaceholder}>
+            Buscar lanches, pizzas...
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* CATEGORIAS */}
+      <View style={styles.categoriesContainer}>
+        <Text style={styles.sectionTitle}>Categorias</Text>
+        <View style={styles.categoriesRow}>
+          {[1, 2, 3, 4].map((id, index) => (
+            <TouchableOpacity key={id} style={styles.categoryItem}>
+              <View
+                style={[
+                  styles.categoryCircle,
+                  index === 0 && styles.categoryCircleActive,
+                ]}
+              >
+                <Image
+                  source={require("../assets/imgPizza.png")}
+                  style={styles.categoryImage}
+                />
+              </View>
+              <Text
+                style={[
+                  styles.categoryText,
+                  index === 0 && styles.categoryTextActive,
+                ]}
+              >
+                {index === 0 ? "Pizzas" : "Lanches"}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
+      {/* BANNER PROMOCIONAL (Estilo Ticket) */}
+      <View style={styles.promoBanner}>
+        <View style={styles.promoContent}>
+          <Text style={styles.promoTitle}>50% OFF</Text>
+          <Text style={styles.promoSubtitle}>Na sua primeira compra!</Text>
+        </View>
+        <View style={styles.promoIconBox}>
+          <Ionicons name="ticket-outline" size={30} color="#E72C2C" />
+        </View>
+      </View>
+
+      <Text style={styles.sectionTitle}>Destaques da Semana</Text>
+    </View>
+  );
+
+  const renderItem = ({ item }: { item: BurgerData }) => (
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => router.push("/menu")}
+      activeOpacity={0.9}
+    >
+      <View style={styles.cardImageContainer}>
+        <Image
+          source={
+            item.imagem_url
+              ? { uri: item.imagem_url }
+              : require("../assets/logo.png")
+          }
+          style={styles.cardImage}
+        />
+        {/* Botãozinho de + flutuante */}
+        <View style={styles.addBtn}>
+          <Ionicons name="add" size={20} color="#78350F" />
+        </View>
+      </View>
+
+      <View style={styles.cardInfo}>
+        <Text style={styles.cardName} numberOfLines={1}>
+          {item.nome}
+        </Text>
+        <Text style={styles.cardPrice}>
+          R$ {item.preco.toFixed(2).replace(".", ",")}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#E72C2C" />
+
+      {loading ? (
+        <View style={styles.centerLoading}>
+          <ActivityIndicator size="large" color="#E72C2C" />
+        </View>
+      ) : (
+        <FlatList
+          data={highlights}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          numColumns={2}
+          ListHeaderComponent={renderHeader}
+          columnWrapperStyle={styles.listColumnWrapper}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>Nenhum produto encontrado.</Text>
+            </View>
+          }
+        />
+      )}
+
+      {/* TAB BAR FLUTUANTE */}
+      <View style={styles.floatingTabBar}>
+        <TouchableOpacity
+          style={styles.tabItem}
+          onPress={() => router.replace("/")}
+        >
+          <Ionicons name="home" size={24} color="#FFD700" />
+          <Text style={[styles.tabLabel, { color: "#FFD700" }]}>Início</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.tabItem}
+          onPress={() => router.push("/buscar")}
+        >
+          <Ionicons name="search-outline" size={24} color="#FFF" />
+          <Text style={styles.tabLabel}>Buscar</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.tabItemMain}
+          onPress={() => router.push("/carrinho")}
+        >
+          <View style={styles.mainTabCircle}>
+            <Ionicons name="cart" size={28} color="#E72C2C" />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.tabItem}
+          onPress={() => router.push("/menu")}
+        >
+          <Ionicons name="fast-food-outline" size={24} color="#FFF" />
+          <Text style={styles.tabLabel}>Menu</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.tabItem}
+          onPress={() => router.push("/minha-conta")}
+        >
+          <Ionicons name="person-outline" size={24} color="#FFF" />
+          <Text style={styles.tabLabel}>Perfil</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 };
 
-// --- Estilos ---
 const styles = StyleSheet.create({
-    fullContainer: {
-        flex: 1,
-        backgroundColor: '#FFF',
-    },
-    // Estilo novo para o Cabeçalho Superior
-    topHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingTop: 15,
-        paddingBottom: 10,
-        backgroundColor: '#E72C2C',
-        elevation: 2,
-        color: '#000000ff'
-    },
-    logoText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#ffffffff',
-    },
-    contentContainer: {
-        flex: 1,
-        paddingHorizontal: 20,
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginTop: 15,
-        textAlign: 'center',
-    },
-    headerSubtitle: {
-        fontSize: 14,
-        color: '#666',
-        textAlign: 'center',
-        marginBottom: 10,
-    },
-    circleContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        paddingVertical: 15,
-    },
-    productCircle: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        backgroundColor: '#F0F0F0',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: '#E72C2C',
-    },
-    circleImage: {
-        width: 30,
-        height: 30,
-        resizeMode: 'contain',
-    },
-    searchArea: {
-        marginVertical: 15,
-        alignItems: 'center',
-    },
-    locationInput: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#F0F0F0',
-        borderRadius: 25,
-        padding: 10,
-        width: '100%',
-        marginBottom: 10,
-    },
-    locationText: {
-        marginLeft: 10,
-        color: '#999',
-    },
-    searchButton: {
-        width: '100%',
-        backgroundColor: '#E72C2C',
-        paddingVertical: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    searchButtonText: {
-        color: '#FFF',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    sectionTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#E72C2C',
-        textAlign: 'center',
-        marginVertical: 20,
-    },
-    row: {
-        justifyContent: 'space-between',
-        marginBottom: 15,
-    },
-    productCard: {
-        width: '48%', 
-        backgroundColor: '#FFF',
-        borderRadius: 8,
-        padding: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 1,
-        elevation: 3,
-        alignItems: 'center',
-        marginBottom: 5,
-    },
-    productImage: {
-        width: 80,
-        height: 80,
-        resizeMode: 'contain',
-        marginBottom: 5,
-    },
-    productName: {
-        fontWeight: 'bold',
-        fontSize: 14,
-        marginTop: 5,
-        textAlign: 'center',
-    },
-    productPrice: {
-        color: '#E72C2C',
-        fontWeight: 'bold',
-        marginTop: 2,
-    },
-    discountBanner: {
-        backgroundColor: '#FFD700',
-        padding: 15,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginVertical: 20,
-    },
-    discountText: {
-        color: '#E72C2C',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    tabBar: {
-        flexDirection: 'row',
-        height: 60,
-        backgroundColor: '#E72C2C',
-        borderTopWidth: 1,
-        borderTopColor: '#DDD',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-    },
-    tabItem: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
+  container: {
+    flex: 1,
+    backgroundColor: "#F8F9FA", // Fundo cinza bem clarinho para destacar os cards brancos
+  },
+  centerLoading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  // --- HEADER CURVO ---
+  curvedHeader: {
+    backgroundColor: "#E72C2C",
+    paddingTop: 50,
+    paddingHorizontal: 20,
+    paddingBottom: 40, // Espaço extra para a curva
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+  },
+  headerTopRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  headerTitles: {
+    alignItems: "center",
+  },
+  appTitle: {
+    fontSize: 20,
+    fontWeight: "900",
+    color: "#FFF",
+    fontStyle: "italic",
+    letterSpacing: 0.5,
+  },
+  locationRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 2,
+    backgroundColor: "rgba(0,0,0,0.1)",
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  locationText: {
+    color: "#FFF",
+    fontSize: 12,
+    marginHorizontal: 4,
+    fontWeight: "500",
+  },
+  iconButton: {
+    padding: 5,
+  },
+  badge: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "#FFD700",
+    borderWidth: 1,
+    borderColor: "#E72C2C",
+  },
+  welcomeText: {
+    color: "#FFF",
+    fontSize: 22,
+    fontWeight: "bold",
+    marginTop: 20,
+    width: "70%",
+    lineHeight: 28,
+  },
+
+  // --- BUSCA FLUTUANTE ---
+  floatingSearchContainer: {
+    paddingHorizontal: 20,
+    marginTop: -25, // Faz sobrepor o header
+    marginBottom: 10,
+  },
+  searchBar: {
+    backgroundColor: "#FFF",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 14,
+    paddingHorizontal: 15,
+    borderRadius: 15,
+    elevation: 5, // Sombra Android
+    shadowColor: "#000", // Sombra iOS
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+  },
+  searchPlaceholder: {
+    marginLeft: 10,
+    color: "#9CA3AF",
+    fontSize: 15,
+  },
+
+  // --- CATEGORIAS ---
+  categoriesContainer: {
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#1F2937",
+    marginBottom: 15,
+    marginLeft: 20,
+  },
+  categoriesRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  categoryItem: {
+    alignItems: "center",
+    width: width / 4 - 20,
+  },
+  categoryCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#FFF",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    marginBottom: 8,
+  },
+  categoryCircleActive: {
+    backgroundColor: "#FEF3C7", // Amarelo bem claro
+    borderWidth: 1,
+    borderColor: "#FFD700",
+  },
+  categoryImage: {
+    width: 35,
+    height: 35,
+    resizeMode: "contain",
+  },
+  categoryText: {
+    fontSize: 12,
+    color: "#6B7280",
+    fontWeight: "500",
+  },
+  categoryTextActive: {
+    color: "#E72C2C",
+    fontWeight: "bold",
+  },
+
+  // --- BANNER ---
+  promoBanner: {
+    marginHorizontal: 20,
+    backgroundColor: "#FFD700", // Amarelo
+    borderRadius: 15,
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 20,
+    marginBottom: 20,
+    elevation: 3,
+  },
+  promoContent: {
+    flex: 1,
+  },
+  promoTitle: {
+    fontSize: 20,
+    fontWeight: "900",
+    color: "#78350F", // Marrom escuro para contraste no amarelo
+  },
+  promoSubtitle: {
+    color: "#92400E",
+    fontSize: 14,
+    marginTop: 2,
+  },
+  promoIconBox: {
+    backgroundColor: "rgba(255,255,255,0.3)",
+    padding: 10,
+    borderRadius: 12,
+  },
+
+  // --- LISTA DE PRODUTOS ---
+  listContent: {
+    paddingBottom: 120, // Espaço extra para a Tab Bar flutuante não cobrir
+  },
+  listColumnWrapper: {
+    paddingHorizontal: 20,
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  emptyContainer: {
+    alignItems: "center",
+    marginTop: 30,
+  },
+  emptyText: {
+    color: "#9CA3AF",
+  },
+
+  // --- CARDS MODERNOS ---
+  card: {
+    width: width / 2 - 30, // 2 colunas com margem
+    backgroundColor: "#FFF",
+    borderRadius: 20,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  cardImageContainer: {
+    height: 120,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F3F4F6", // Fundo cinza suave atrás da imagem
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    position: "relative",
+  },
+  cardImage: {
+    width: 90,
+    height: 90,
+    resizeMode: "contain",
+  },
+  addBtn: {
+    position: "absolute",
+    bottom: -15,
+    right: 15,
+    backgroundColor: "#FFD700",
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  cardInfo: {
+    padding: 12,
+    paddingTop: 20,
+  },
+  cardName: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#374151",
+    marginBottom: 4,
+  },
+  cardPrice: {
+    fontSize: 16,
+    fontWeight: "900",
+    color: "#E72C2C",
+  },
+
+  // --- TAB BAR FLUTUANTE ---
+  floatingTabBar: {
+    position: "absolute",
+    bottom: 25,
+    left: 20,
+    right: 20,
+    backgroundColor: "#E72C2C", // Fundo vermelho
+    height: 65,
+    borderRadius: 35,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    elevation: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    paddingHorizontal: 5,
+  },
+  tabItem: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+  },
+  tabLabel: {
+    fontSize: 9,
+    color: "#FFF",
+    marginTop: 2,
+    fontWeight: "500",
+  },
+  tabItemMain: {
+    top: -25, // Sobe o botão do meio
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  mainTabCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#FFD700", // Botão central amarelo
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+    borderWidth: 4,
+    borderColor: "#F8F9FA", // Borda da cor do fundo da tela para "cortar" a barra
+  },
 });
 
 export default HomeScreen;

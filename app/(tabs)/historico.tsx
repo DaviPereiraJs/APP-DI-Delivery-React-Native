@@ -3,41 +3,78 @@ import { View, Text, StyleSheet, TouchableOpacity, StatusBar, FlatList } from 'r
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons'; 
 
-// Dados de Exemplo do Histórico de Pedidos
-const DUMMY_ORDERS = [
-    { id: '1001', date: '2025-11-20', total: 50.00, status: 'Entregue', restaurant: 'O Rei do Hambúrguer' },
-    { id: '1002', date: '2025-11-15', total: 72.50, status: 'Cancelado', restaurant: 'Esfiha Árabe' },
-    { id: '1003', date: '2025-11-10', total: 35.00, status: 'Entregue', restaurant: 'A Moda da Casa' },
-    { id: '1004', date: '2025-11-05', total: 60.00, status: 'Entregue', restaurant: 'O Rei do Hambúrguer' },
+// --- 1. CRIANDO A TIPAGEM (O Molde) ---
+interface OrderData {
+    id: string;
+    date: string;
+    total: number;
+    status: string;
+    restaurant: string;
+    items: string;
+}
+
+// --- DADOS (MOCK) ---
+const DUMMY_ORDERS: OrderData[] = [
+    { id: '1001', date: '20/11/2025', total: 50.00, status: 'Entregue', restaurant: 'O Rei do Hambúrguer', items: '2x X-Bacon, 1x Coca-Cola' },
+    { id: '1002', date: '15/11/2025', total: 72.50, status: 'Cancelado', restaurant: 'Esfiha Árabe', items: '10x Esfiha Carne, 1x Kibe' },
+    { id: '1003', date: '10/11/2025', total: 35.00, status: 'Entregue', restaurant: 'A Moda da Casa', items: '1x Pizza Broto' },
+    { id: '1004', date: '05/11/2025', total: 60.00, status: 'Entregue', restaurant: 'O Rei do Hambúrguer', items: '2x Combo Família' },
 ];
 
-// Componente para renderizar um item do pedido
-const OrderItem = ({ item }) => {
+// --- 2. APLICANDO A TIPAGEM NO COMPONENTE ---
+const OrderItem = ({ item }: { item: OrderData }) => {
     
-    // Define a cor com base no status
     const getStatusColor = (status: string) => {
-        if (status === 'Entregue') return '#28a745'; // Verde
-        if (status === 'Cancelado') return '#dc3545'; // Vermelho
-        return '#ffc107'; // Amarelo (Em processamento)
+        if (status === 'Entregue') return '#10B981'; 
+        if (status === 'Cancelado') return '#EF4444'; 
+        return '#F59E0B'; 
+    };
+
+    const getStatusIcon = (status: string): keyof typeof Ionicons.glyphMap => {
+        if (status === 'Entregue') return 'checkmark-circle';
+        if (status === 'Cancelado') return 'close-circle';
+        return 'time';
     };
 
     return (
         <TouchableOpacity 
             style={historyStyles.orderCard}
-            onPress={() => alert(`Ver detalhes do Pedido #${item.id}`)}
+            onPress={() => {}}
+            activeOpacity={0.7}
         >
+            {/* Cabeçalho do Card */}
             <View style={historyStyles.cardHeader}>
-                <Text style={historyStyles.orderId}>Pedido #{item.id}</Text>
-                <Text style={historyStyles.orderDate}>{item.date}</Text>
+                <View style={historyStyles.storeInfo}>
+                    <View style={historyStyles.storeIcon}>
+                        <Ionicons name="storefront" size={20} color="#E72C2C" />
+                    </View>
+                    <View>
+                        <Text style={historyStyles.restaurantName}>{item.restaurant}</Text>
+                        <Text style={historyStyles.orderDate}>{item.date} • #{item.id}</Text>
+                    </View>
+                </View>
+                <Text style={historyStyles.orderTotal}>R$ {item.total.toFixed(2).replace('.', ',')}</Text>
             </View>
             
-            <Text style={historyStyles.restaurantName}>{item.restaurant}</Text>
+            <View style={historyStyles.divider} />
+
+            {/* Resumo dos Itens */}
+            <Text style={historyStyles.itemsText} numberOfLines={1}>
+                {item.items}
+            </Text>
             
+            {/* Status e Ação */}
             <View style={historyStyles.cardFooter}>
-                <View style={[historyStyles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
-                    <Text style={historyStyles.statusText}>{item.status}</Text>
+                <View style={historyStyles.statusRow}>
+                    <Ionicons name={getStatusIcon(item.status)} size={16} color={getStatusColor(item.status)} />
+                    <Text style={[historyStyles.statusText, { color: getStatusColor(item.status) }]}>
+                        {item.status}
+                    </Text>
                 </View>
-                <Text style={historyStyles.orderTotal}>Total: R$ {item.total.toFixed(2).replace('.', ',')}</Text>
+                
+                <TouchableOpacity style={historyStyles.repeatButton}>
+                    <Text style={historyStyles.repeatButtonText}>Pedir de novo</Text>
+                </TouchableOpacity>
             </View>
         </TouchableOpacity>
     );
@@ -47,41 +84,63 @@ const HistoricoScreen: React.FC = () => {
 
     return (
         <View style={historyStyles.fullContainer}>
-            <StatusBar barStyle="dark-content" backgroundColor="#FFF" /> 
+            <StatusBar barStyle="light-content" backgroundColor="#E72C2C" /> 
 
-            {/* --- CABEÇALHO --- */}
+            {/* --- CABEÇALHO VERMELHO --- */}
             <View style={historyStyles.header}>
                 <TouchableOpacity onPress={() => router.back()}>
-                    <Ionicons name="arrow-back" size={28} color="#000" />
+                    <Ionicons name="arrow-back" size={28} color="#fff" />
                 </TouchableOpacity>
-                <Text style={historyStyles.headerTitle}>Histórico de Pedidos</Text>
+                <Text style={historyStyles.headerTitle}>MEUS PEDIDOS</Text>
                 <View style={{ width: 28 }} /> 
             </View>
 
-            {/* --- LISTA DE PEDIDOS --- */}
-            <FlatList
-                data={DUMMY_ORDERS}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => <OrderItem item={item} />}
-                contentContainerStyle={historyStyles.listContent}
-                ListEmptyComponent={() => (
-                    <Text style={historyStyles.emptyText}>Você ainda não fez nenhum pedido.</Text>
-                )}
-            />
+            {/* --- CARD BRANCO ARREDONDADO --- */}
+            <View style={historyStyles.whiteCard}>
+                <FlatList
+                    data={DUMMY_ORDERS}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => <OrderItem item={item} />}
+                    contentContainerStyle={historyStyles.listContent}
+                    showsVerticalScrollIndicator={false}
+                    ListEmptyComponent={() => (
+                        <View style={historyStyles.emptyContainer}>
+                            <Ionicons name="receipt-outline" size={60} color="#DDD" />
+                            <Text style={historyStyles.emptyText}>Você ainda não fez nenhum pedido.</Text>
+                        </View>
+                    )}
+                    ListFooterComponent={<View style={{height: 100}} />}
+                />
+            </View>
 
-            {/* BARRA DE NAVEGAÇÃO INFERIOR */}
-            <View style={historyStyles.tabBar}>
-                <TouchableOpacity style={historyStyles.tabItem} onPress={() => router.replace('./(tabs)')}>
-                    <Ionicons name="home-outline" size={24} color="#000" />
+            {/* --- BARRA FLUTUANTE --- */}
+            <View style={historyStyles.floatingTabBar}>
+                <TouchableOpacity style={historyStyles.tabItem} onPress={() => router.replace('/(tabs)')}>
+                    <Ionicons name="home-outline" size={24} color="#fff" />
+                    <Text style={historyStyles.tabLabel}>Início</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={historyStyles.tabItem}>
-                    <Ionicons name="search-outline" size={24} color="#000" onPress={() => router.replace('./buscar')} />
+
+                <TouchableOpacity style={historyStyles.tabItem} onPress={() => router.replace('/(tabs)/buscar')}>
+                    <Ionicons name="search-outline" size={24} color="#fff" />
+                    <Text style={historyStyles.tabLabel}>Buscar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={historyStyles.tabItem} onPress={() => router.push('./carrinho')}>
-                    <Ionicons name="cart-outline" size={24} color="#000" />
+
+                <TouchableOpacity 
+                    style={historyStyles.centerTabItem} 
+                    onPress={() => router.replace('/carrinho')}
+                    activeOpacity={0.9}
+                >
+                    <Ionicons name="cart" size={32} color="#E72C2C" />
                 </TouchableOpacity>
-                <TouchableOpacity style={historyStyles.tabItem}>
-                    <Ionicons name="person-outline" size={24} color="#000" onPress={() => router.push('./minha-conta')} />
+
+                <TouchableOpacity style={historyStyles.tabItem} onPress={() => router.replace('/(tabs)/menu')}>
+                    <Ionicons name="fast-food-outline" size={24} color="#fff" />
+                    <Text style={historyStyles.tabLabel}>Menu</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={historyStyles.tabItem} onPress={() => router.replace('/(tabs)/minha-conta')}>
+                    <Ionicons name="person" size={24} color="#fff" />
+                    <Text style={[historyStyles.tabLabel, {fontWeight: 'bold'}]}>Perfil</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -92,100 +151,167 @@ const HistoricoScreen: React.FC = () => {
 const historyStyles = StyleSheet.create({
     fullContainer: {
         flex: 1,
-        backgroundColor: '#F0F0F0',
+        backgroundColor: '#E72C2C', 
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: 15,
-        paddingTop: 20,
-        backgroundColor: '#E72C2C',
-        borderBottomWidth: 1,
-        borderBottomColor: '#EEE',
+        paddingHorizontal: 20,
+        paddingTop: 50,
+        paddingBottom: 25,
     },
     headerTitle: {
         fontSize: 20,
-        fontWeight: 'bold',
-        color: '#000',
+        fontWeight: '900',
+        color: '#FFF',
+        letterSpacing: 1,
+        fontStyle: 'italic'
+    },
+    whiteCard: {
+        flex: 1,
+        backgroundColor: '#F9FAFB', 
+        borderTopLeftRadius: 35,
+        borderTopRightRadius: 35,
+        overflow: 'hidden',
     },
     listContent: {
-        padding: 15,
+        padding: 20,
+        paddingTop: 25
+    },
+    emptyContainer: {
+        alignItems: 'center',
+        marginTop: 50
     },
     orderCard: {
         backgroundColor: '#FFF',
         padding: 15,
-        borderRadius: 8,
+        borderRadius: 15,
         marginBottom: 15,
         elevation: 2,
         shadowColor: '#000',
-        shadowOpacity: 0.1,
+        shadowOpacity: 0.05,
         shadowRadius: 5,
+        borderWidth: 1,
+        borderColor: '#F3F4F6'
     },
     cardHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 5,
+        alignItems: 'flex-start',
+        marginBottom: 10,
     },
-    orderId: {
+    storeInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    storeIcon: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: '#FFF0F0',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 10
+    },
+    restaurantName: {
         fontSize: 16,
         fontWeight: 'bold',
         color: '#333',
     },
     orderDate: {
-        fontSize: 14,
-        color: '#999',
+        fontSize: 12,
+        color: '#9CA3AF',
+        marginTop: 2
     },
-    restaurantName: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#E72C2C',
-        marginBottom: 10,
+    orderTotal: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333'
+    },
+    divider: {
+        height: 1,
+        backgroundColor: '#F3F4F6',
+        marginVertical: 10
+    },
+    itemsText: {
+        fontSize: 13,
+        color: '#6B7280',
+        marginBottom: 12
     },
     cardFooter: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: 10,
-        borderTopWidth: 1,
-        borderTopColor: '#EEE',
-        paddingTop: 10,
     },
-    orderTotal: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    statusBadge: {
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 15,
+    statusRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 5
     },
     statusText: {
-        color: '#FFF',
         fontWeight: 'bold',
+        fontSize: 13,
+    },
+    repeatButton: {
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderRadius: 20,
+        backgroundColor: '#FFF',
+        borderWidth: 1,
+        borderColor: '#E72C2C'
+    },
+    repeatButtonText: {
+        color: '#E72C2C',
         fontSize: 12,
+        fontWeight: 'bold'
     },
     emptyText: {
         textAlign: 'center',
-        marginTop: 50,
+        marginTop: 15,
         fontSize: 16,
-        color: '#666',
+        color: '#9CA3AF',
     },
-    // --- Estilos da Tab Bar ---
-    tabBar: {
-        flexDirection: 'row',
-        height: 60,
+    floatingTabBar: {
+        position: 'absolute',
+        bottom: 25,
+        left: 20,
+        right: 20,
+        height: 70,
         backgroundColor: '#E72C2C',
-        borderTopWidth: 1,
-        borderTopColor: '#DDD',
-        justifyContent: 'space-around',
+        borderRadius: 35,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
+        paddingHorizontal: 15,
+        elevation: 10,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
     },
     tabItem: {
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        width: 50,
     },
+    tabLabel: {
+        fontSize: 9,
+        color: '#FFF',
+        marginTop: 2
+    },
+    centerTabItem: {
+        width: 65,
+        height: 65,
+        borderRadius: 32.5,
+        backgroundColor: '#FFD700',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 35, 
+        borderWidth: 5,
+        borderColor: '#F2F2F2', 
+        elevation: 5
+    }
 });
 
 export default HistoricoScreen;

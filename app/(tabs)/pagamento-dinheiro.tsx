@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, StatusBar, ScrollView, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, StatusBar, ScrollView, Keyboard, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons'; 
 
-// Dados de Exemplo do Pagamento
+// Dados de Exemplo
 const TAXA_ENTREGA = 5.00;
-const SUB_TOTAL = 45.00; // Valor fixo para o exemplo
+const SUB_TOTAL = 45.00; 
 const TOTAL_FINAL = SUB_TOTAL + TAXA_ENTREGA;
 
 const PagamentoDinheiroScreen: React.FC = () => {
     const [needsChange, setNeedsChange] = useState(false);
     const [changeAmount, setChangeAmount] = useState('');
 
-    // Função para calcular o troco
     const calculateChange = () => {
         const amount = parseFloat(changeAmount.replace(',', '.'));
         if (isNaN(amount) || amount < TOTAL_FINAL) {
@@ -22,127 +21,149 @@ const PagamentoDinheiroScreen: React.FC = () => {
         return `R$ ${change.toFixed(2).replace('.', ',')}`;
     };
 
-    // Função para finalizar o pedido
     const handleFinishOrder = () => {
-        // Lógica de validação do troco
+        // Validação do troco
         if (needsChange) {
             const amount = parseFloat(changeAmount.replace(',', '.'));
             if (isNaN(amount) || amount < TOTAL_FINAL) {
-                alert('Por favor, informe um valor igual ou superior ao total final para o troco.');
+                Alert.alert('Atenção', 'O valor para troco deve ser maior que o total do pedido.');
                 return;
             }
         }
         
-        console.log('Finalizando pedido em dinheiro...');
-        // Navegaria para a tela de confirmação de pedido e status
-        router.replace('./confirmacao-pedido'); 
+        // ✅ CORREÇÃO: Removemos o Alert e mandamos direto para a tela de TUDO CERTO!
+        router.replace('/confirmacao-pedido');
     };
 
     return (
         <View style={dinheiroStyles.fullContainer}>
-            <StatusBar barStyle="dark-content" backgroundColor="#FFF" /> 
+            <StatusBar barStyle="light-content" backgroundColor="#E72C2C" /> 
 
-            {/* --- CABEÇALHO --- */}
+            {/* --- CABEÇALHO VERMELHO --- */}
             <View style={dinheiroStyles.header}>
                 <TouchableOpacity onPress={() => router.back()}>
-                    <Ionicons name="arrow-back" size={28} color="#ffffffff" />
+                    <Ionicons name="arrow-back" size={28} color="#fff" />
                 </TouchableOpacity>
                 <Text style={dinheiroStyles.headerTitle}>PAGAMENTO</Text>
                 <View style={{ width: 28 }} />
             </View>
 
-            {/* --- CONTEÚDO PRINCIPAL --- */}
-            <ScrollView contentContainerStyle={dinheiroStyles.content} keyboardShouldPersistTaps="handled">
-                
-                {/* Seção de Resumo da Entrega (Topo) */}
-                <View style={dinheiroStyles.summarySection}>
-
-                </View>
-                <View style={dinheiroStyles.summarySection}>
-                    <Text style={dinheiroStyles.summaryText}>Valor Final:</Text>
-                    <Text style={dinheiroStyles.summaryValue}>R$ {TOTAL_FINAL.toFixed(2).replace('.', ',')}</Text>
-                </View>
-
-                {/* --- FORMAS DE PAGAMENTO --- */}
-                <Text style={dinheiroStyles.paymentTitle}>Forma de Pagamento:</Text>
-                
-                {/* Opção PIX (Desabilitada) */}
-                <TouchableOpacity style={dinheiroStyles.paymentOption} onPress={() => router.replace('./pagamento-pix')}>
-                    <Text style={dinheiroStyles.paymentOptionText}>PIX</Text>
-                </TouchableOpacity>
-                
-                {/* Botão DINHEIRO Ativo */}
-                <TouchableOpacity style={[dinheiroStyles.paymentOption, dinheiroStyles.activeOption]}>
-                    <Text style={dinheiroStyles.paymentOptionTextActive}>Dinheiro</Text>
-                </TouchableOpacity>
-
-                {/* --- SEÇÃO DE TROCO --- */}
-                <View style={dinheiroStyles.changeContainer}>
-                    <Text style={dinheiroStyles.changeQuestion}>Precisa de Troco?</Text>
+            {/* --- CARD BRANCO ARREDONDADO --- */}
+            <View style={dinheiroStyles.whiteCard}>
+                <ScrollView 
+                    contentContainerStyle={dinheiroStyles.content} 
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                >
                     
-                    {/* Botões Sim / Não */}
-                    <View style={dinheiroStyles.changeButtons}>
+                    {/* RESUMO DO VALOR */}
+                    <View style={dinheiroStyles.summaryCard}>
+                        <Text style={dinheiroStyles.summaryLabel}>Total a Pagar</Text>
+                        <Text style={dinheiroStyles.summaryValue}>R$ {TOTAL_FINAL.toFixed(2).replace('.', ',')}</Text>
+                    </View>
+
+                    {/* SELETOR DE PAGAMENTO (Abas) */}
+                    <View style={dinheiroStyles.paymentTabs}>
                         <TouchableOpacity 
-                            style={[dinheiroStyles.changeButton, needsChange && dinheiroStyles.changeButtonActive]}
+                            style={dinheiroStyles.tabInactive} 
+                            onPress={() => router.replace('/pagamento-pix')}
+                        >
+                            <Ionicons name="qr-code-outline" size={20} color="#666" />
+                            <Text style={dinheiroStyles.tabTextInactive}>PIX</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={dinheiroStyles.tabActive}>
+                            <Ionicons name="cash-outline" size={20} color="#E72C2C" />
+                            <Text style={dinheiroStyles.tabTextActive}>DINHEIRO</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* OPÇÃO DE TROCO */}
+                    <Text style={dinheiroStyles.sectionTitle}>Precisa de troco?</Text>
+                    
+                    <View style={dinheiroStyles.changeOptionsRow}>
+                        <TouchableOpacity 
+                            style={[dinheiroStyles.optionButton, !needsChange && dinheiroStyles.optionButtonActive]}
+                            onPress={() => {setNeedsChange(false); setChangeAmount(''); Keyboard.dismiss();}}
+                        >
+                            <Text style={[dinheiroStyles.optionText, !needsChange && dinheiroStyles.optionTextActive]}>Não preciso</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity 
+                            style={[dinheiroStyles.optionButton, needsChange && dinheiroStyles.optionButtonActive]}
                             onPress={() => setNeedsChange(true)}
                         >
-                            <Text style={[dinheiroStyles.changeButtonText, needsChange && dinheiroStyles.changeButtonTextActive]}>Sim</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity 
-                            style={[dinheiroStyles.changeButton, !needsChange && dinheiroStyles.changeButtonActive]}
-                            onPress={() => {setNeedsChange(false); setChangeAmount('');}}
-                        >
-                            <Text style={[dinheiroStyles.changeButtonText, !needsChange && dinheiroStyles.changeButtonTextActive]}>Não</Text>
+                            <Text style={[dinheiroStyles.optionText, needsChange && dinheiroStyles.optionTextActive]}>Sim, preciso</Text>
                         </TouchableOpacity>
                     </View>
-                </View>
 
-                {/* CAMPO DE QUANTO DINHEIRO */}
-                {needsChange && (
-                    <View style={dinheiroStyles.inputContainer}>
-                        <Text style={dinheiroStyles.inputLabel}>Pra quanto?</Text>
-                        <TextInput
-                            style={dinheiroStyles.input}
-                            placeholder={`Ex: ${Math.ceil(TOTAL_FINAL)}`}
-                            placeholderTextColor="#999"
-                            keyboardType="numeric"
-                            value={changeAmount}
-                            onChangeText={setChangeAmount}
-                            onBlur={Keyboard.dismiss}
-                        />
-                         <View style={dinheiroStyles.changeResultRow}>
-                            <Text style={dinheiroStyles.changeResultLabel}>Troco será:</Text>
-                            <Text style={dinheiroStyles.changeResultValue}>{calculateChange()}</Text>
+                    {/* CAMPO DE VALOR DO TROCO */}
+                    {needsChange && (
+                        <View style={dinheiroStyles.changeInputContainer}>
+                            <Text style={dinheiroStyles.inputLabel}>Troco para quanto?</Text>
+                            <View style={dinheiroStyles.inputWrapper}>
+                                <Text style={dinheiroStyles.currencyPrefix}>R$</Text>
+                                <TextInput
+                                    style={dinheiroStyles.input}
+                                    placeholder="0,00"
+                                    placeholderTextColor="#CCC"
+                                    keyboardType="numeric"
+                                    value={changeAmount}
+                                    onChangeText={setChangeAmount}
+                                />
+                            </View>
+                            
+                            <View style={dinheiroStyles.resultBox}>
+                                <Text style={dinheiroStyles.resultLabel}>Seu troco será:</Text>
+                                <Text style={dinheiroStyles.resultValue}>{calculateChange()}</Text>
+                            </View>
                         </View>
-                    </View>
-                )}
-                
-                {/* Botão FINALIZAR PEDIDO */}
-                <TouchableOpacity 
-                    style={dinheiroStyles.finishOrderButton}
-                    onPress={handleFinishOrder}
-                    disabled={needsChange && (parseFloat(changeAmount.replace(',', '.')) < TOTAL_FINAL || isNaN(parseFloat(changeAmount.replace(',', '.'))))}
-                >
-                    <Text style={dinheiroStyles.finishOrderButtonText}>FINALIZAR PEDIDO</Text>
-                </TouchableOpacity>
+                    )}
 
-                <Text style={dinheiroStyles.finalMessage}>Pedido Finalizado!</Text>
+                    {/* BOTÃO FINALIZAR (Dourado) */}
+                    <TouchableOpacity 
+                        style={dinheiroStyles.finishButton}
+                        onPress={handleFinishOrder}
+                        activeOpacity={0.8}
+                    >
+                        <Text style={dinheiroStyles.finishButtonText}>FINALIZAR PEDIDO</Text>
+                        <Ionicons name="checkmark-circle" size={24} color="#78350F" style={{marginLeft: 10}} />
+                    </TouchableOpacity>
 
-            </ScrollView>
+                    {/* Espaço extra para barra flutuante */}
+                    <View style={{height: 100}} />
 
-            {/* BARRA DE NAVEGAÇÃO INFERIOR */}
-            <View style={dinheiroStyles.tabBar}>
+                </ScrollView>
+            </View>
+
+            {/* --- BARRA FLUTUANTE --- */}
+            <View style={dinheiroStyles.floatingTabBar}>
                 <TouchableOpacity style={dinheiroStyles.tabItem} onPress={() => router.replace('/(tabs)')}>
-                    <Ionicons name="home-outline" size={24} color="#ffffffff" />
+                    <Ionicons name="home-outline" size={24} color="#fff" />
+                    <Text style={dinheiroStyles.tabLabel}>Início</Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity style={dinheiroStyles.tabItem} onPress={() => router.push('/(tabs)/buscar')}>
-                    <Ionicons name="search-outline" size={24} color="#ffffffff" />
+                    <Ionicons name="search-outline" size={24} color="#fff" />
+                    <Text style={dinheiroStyles.tabLabel}>Buscar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={dinheiroStyles.tabItem} onPress={() => router.push('./carrinho')}>
-                    <Ionicons name="cart-outline" size={24} color="#ffffffff" />
+
+                <TouchableOpacity 
+                    style={dinheiroStyles.centerTabItem} 
+                    onPress={() => router.push('/carrinho')}
+                    activeOpacity={0.9}
+                >
+                    <Ionicons name="cart" size={32} color="#E72C2C" />
                 </TouchableOpacity>
-                <TouchableOpacity style={dinheiroStyles.tabItem} onPress={() => router.replace('/minha-conta')}>
-                    <Ionicons name="person-outline" size={24} color="#ffffffff" />
+
+                <TouchableOpacity style={dinheiroStyles.tabItem} onPress={() => router.push('/(tabs)/menu')}>
+                    <Ionicons name="fast-food-outline" size={24} color="#fff" />
+                    <Text style={dinheiroStyles.tabLabel}>Menu</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={dinheiroStyles.tabItem} onPress={() => router.push('/(tabs)/minha-conta')}>
+                    <Ionicons name="person-outline" size={24} color="#fff" />
+                    <Text style={dinheiroStyles.tabLabel}>Perfil</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -153,172 +174,239 @@ const PagamentoDinheiroScreen: React.FC = () => {
 const dinheiroStyles = StyleSheet.create({
     fullContainer: {
         flex: 1,
-        backgroundColor: '#F0F0F0',
+        backgroundColor: '#E72C2C', // 1. Fundo Vermelho
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: 15,
-        paddingTop: 20,
-        backgroundColor: '#E72C2C',
-        borderBottomWidth: 1,
-        borderBottomColor: '#EEE',
+        paddingHorizontal: 20,
+        paddingTop: 50,
+        paddingBottom: 25,
     },
     headerTitle: {
         fontSize: 20,
-        fontWeight: 'bold',
-        color: '#ffffffff',
+        fontWeight: '900',
+        color: '#FFF',
+        letterSpacing: 1,
+        fontStyle: 'italic'
+    },
+    // 2. Card Branco
+    whiteCard: {
+        flex: 1,
+        backgroundColor: '#F9FAFB', 
+        borderTopLeftRadius: 35,
+        borderTopRightRadius: 35,
+        overflow: 'hidden',
     },
     content: {
         padding: 20,
     },
-    summarySection: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 5,
+    // Card de Resumo
+    summaryCard: {
+        backgroundColor: '#FFF',
+        padding: 20,
+        borderRadius: 15,
+        alignItems: 'center',
+        marginBottom: 20,
+        elevation: 2,
+        shadowColor: "#000",
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
     },
-    summaryText: {
+    summaryLabel: {
+        fontSize: 14,
+        color: '#6B7280',
+        textTransform: 'uppercase',
         fontWeight: 'bold',
-        fontSize: 16,
-        color: '#333',
+        marginBottom: 5
     },
     summaryValue: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    paymentTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginTop: 20,
-        marginBottom: 10,
-    },
-    paymentOption: {
-        backgroundColor: '#FFF',
-        padding: 15,
-        borderRadius: 8,
-        marginBottom: 10,
-        borderWidth: 1,
-        borderColor: '#CCC',
-    },
-    activeOption: {
-        backgroundColor: '#FFD700', // Amarelo para Dinheiro ativo
-        borderColor: '#E72C2C',
-        borderWidth: 2,
-    },
-    paymentOptionText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    paymentOptionTextActive: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#E72C2C', // Texto vermelho para opção ativa
-    },
-    changeContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: '#FFF',
-        padding: 15,
-        borderRadius: 8,
-        marginTop: 10,
-    },
-    changeQuestion: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    changeButtons: {
-        flexDirection: 'row',
-        backgroundColor: '#F0F0F0',
-        borderRadius: 5,
-    },
-    changeButton: {
-        paddingHorizontal: 15,
-        paddingVertical: 8,
-        borderRadius: 5,
-    },
-    changeButtonActive: {
-        backgroundColor: '#E72C2C',
-    },
-    changeButtonText: {
-        color: '#333',
-        fontWeight: 'bold',
-    },
-    changeButtonTextActive: {
-        color: '#FFF',
-    },
-    inputContainer: {
-        marginTop: 15,
-        backgroundColor: '#FFF',
-        padding: 15,
-        borderRadius: 8,
-    },
-    inputLabel: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 5,
-    },
-    input: {
-        backgroundColor: '#F0F0F0',
-        height: 50,
-        borderRadius: 5,
-        paddingHorizontal: 10,
-        fontSize: 18,
-    },
-    changeResultRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 15,
-        paddingTop: 10,
-        borderTopWidth: 1,
-        borderTopColor: '#EEE',
-    },
-    changeResultLabel: {
-        fontSize: 16,
-        color: '#333',
-    },
-    changeResultValue: {
-        fontSize: 18,
-        fontWeight: 'bold',
+        fontSize: 32,
+        fontWeight: '900',
         color: '#E72C2C',
     },
-    finishOrderButton: {
-        backgroundColor: '#FFD700', // Amarelo
-        paddingVertical: 18,
-        alignItems: 'center',
-        borderRadius: 8,
-        marginVertical: 20,
-        elevation: 3,
-    },
-    finishOrderButtonText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#E72C2C',
-    },
-    finalMessage: {
-        textAlign: 'center',
-        fontSize: 16,
-        color: '#E72C2C',
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    // --- Estilos da Tab Bar ---
-    tabBar: {
+    // Abas de Pagamento
+    paymentTabs: {
         flexDirection: 'row',
-        height: 60,
-        backgroundColor: '#E72C2C',
-        borderTopWidth: 1,
-        borderTopColor: '#DDD',
-        justifyContent: 'space-around',
-        alignItems: 'center',
+        backgroundColor: '#E5E7EB',
+        borderRadius: 12,
+        padding: 4,
+        marginBottom: 25
     },
-    tabItem: {
+    tabInactive: {
         flex: 1,
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
+        paddingVertical: 12,
+        borderRadius: 10,
     },
+    tabActive: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 12,
+        backgroundColor: '#FFF',
+        borderRadius: 10,
+        elevation: 2,
+    },
+    tabTextInactive: {
+        marginLeft: 8,
+        fontWeight: 'bold',
+        color: '#6B7280'
+    },
+    tabTextActive: {
+        marginLeft: 8,
+        fontWeight: 'bold',
+        color: '#E72C2C'
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#1F2937',
+        marginBottom: 15,
+    },
+    // Opções de Troco (Botões lado a lado)
+    changeOptionsRow: {
+        flexDirection: 'row',
+        gap: 15,
+        marginBottom: 20
+    },
+    optionButton: {
+        flex: 1,
+        paddingVertical: 15,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+        backgroundColor: '#FFF',
+        alignItems: 'center',
+    },
+    optionButtonActive: {
+        backgroundColor: '#FFF0F0',
+        borderColor: '#E72C2C',
+    },
+    optionText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#6B7280'
+    },
+    optionTextActive: {
+        color: '#E72C2C',
+        fontWeight: 'bold'
+    },
+    // Input de Troco
+    changeInputContainer: {
+        backgroundColor: '#FFF',
+        padding: 20,
+        borderRadius: 15,
+        marginBottom: 20
+    },
+    inputLabel: {
+        fontSize: 14,
+        color: '#6B7280',
+        marginBottom: 10,
+        fontWeight: '600'
+    },
+    inputWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderBottomWidth: 2,
+        borderBottomColor: '#E72C2C',
+        marginBottom: 15
+    },
+    currencyPrefix: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#333',
+        marginRight: 5
+    },
+    input: {
+        flex: 1,
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#333',
+        paddingVertical: 5
+    },
+    resultBox: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        backgroundColor: '#FFFBEB', // Amarelo claro
+        padding: 15,
+        borderRadius: 10,
+    },
+    resultLabel: {
+        fontWeight: '600',
+        color: '#B45309'
+    },
+    resultValue: {
+        fontWeight: 'bold',
+        color: '#B45309',
+        fontSize: 16
+    },
+    // Botão Finalizar
+    finishButton: {
+        backgroundColor: '#FFD700', 
+        paddingVertical: 18,
+        borderRadius: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        elevation: 5,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+    },
+    finishButtonText: {
+        fontSize: 18,
+        fontWeight: '900',
+        color: '#78350F',
+        letterSpacing: 0.5
+    },
+    
+    // --- Barra Flutuante ---
+    floatingTabBar: {
+        position: 'absolute',
+        bottom: 25,
+        left: 20,
+        right: 20,
+        height: 70,
+        backgroundColor: '#E72C2C',
+        borderRadius: 35,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        elevation: 10,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
+    },
+    tabItem: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 50,
+    },
+    tabLabel: {
+        fontSize: 9,
+        color: '#FFF',
+        marginTop: 2
+    },
+    centerTabItem: {
+        width: 65,
+        height: 65,
+        borderRadius: 32.5,
+        backgroundColor: '#FFD700',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 35, 
+        borderWidth: 5,
+        borderColor: '#F2F2F2', 
+        elevation: 5
+    }
 });
 
 export default PagamentoDinheiroScreen;

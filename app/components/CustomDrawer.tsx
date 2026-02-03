@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 // Definição das informações do usuário de exemplo
 const USER_NAME = 'Davi';
-const LOGO_PATH = require('../assets/LogoInicialApp.png'); // Imagem do hamburguer
+const LOGO_PATH = require('../assets/logo.png'); // Imagem do hamburguer
 
 // Este componente é o conteúdo que aparece ao abrir o menu lateral
 const CustomDrawerContent = (props: any) => {

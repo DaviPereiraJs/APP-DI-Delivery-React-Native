@@ -1,174 +1,413 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, StatusBar, ScrollView, ActivityIndicator, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
-// SOLUÇÃO DEFINITIVA DE IMAGEM:
-// Usamos uma URL da internet para o App nunca mais travar procurando arquivo local
-// const LOGO_URL = '';
-//const LOGO_URL = '../app/assets/imgLogo1.png'
-const burgerImage = require('../app/assets/imgLogo1.png'); 
+// Ícones
+import {
+  ArrowLeft,
+  KeyRound,
+  Lock,
+  Mail,
+  ShoppingBag,
+  UserPlus,
+} from "lucide-react-native";
 
+// Importações do Firebase
+import {
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
-const LoginScreen: React.FC = () => {
-    const router = useRouter();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+// ✅ Caminho para sua pasta services (ajuste os .. se necessário)
+import { auth, db } from "../services/firebaseConfig";
 
-    const handleLogin = async () => {
-        // 1. Validação básica
-        // if (!email || !password) {
-        //    Alert.alert('Erro', 'Por favor, preencha todos os campos.');
-        //    return;
-        // }
+export default function LoginScreen() {
+  const router = useRouter();
 
-        setIsLoading(true);
+  // Estados
+  const [view, setView] = useState<"login" | "cadastro" | "recuperar">("login");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
 
-        // 2. SIMULAÇÃO DE LOGIN (Para funcionar sem API por enquanto)
-        setTimeout(() => {
-            setIsLoading(false);
-            console.log('Login autorizado. Entrando...');
-            
-            // 3. NAVEGAÇÃO PARA AS ABAS (HOME)
-            // O replace impede que o usuário volte para o login ao apertar "Voltar"
-            router.replace('/(tabs)'); 
-            
-        }, 1500); // Espera 1.5 segundos para simular carregamento
-    };
-    
-    return (
-        <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
-            <StatusBar barStyle="light-content" backgroundColor="#E72C2C" /> 
-            
-            {/* Imagem Online (Segura) */}
-             <Image source={burgerImage} style={styles.burgerImage} />
-            
-            <Text style={styles.titleText}>LOGIN</Text>
-            
-            {/* Campo E-mail */}
-            <TextInput
+  // --- 1. FUNÇÃO MÁGICA DE ALERTA (CORREÇÃO) ---
+  // Isso garante que você veja o erro tanto no PC quanto no Celular
+  const showAlert = (title: string, message: string) => {
+    if (Platform.OS === 'web') {
+      window.alert(`${title}\n\n${message}`);
+    } else {
+      Alert.alert(title, message);
+    }
+  };
+
+  // --- FUNÇÃO DE LOGIN ---
+  const handleLogin = async () => {
+    if (!email || !password)
+      return showAlert("Erro", "Preencha e-mail e senha.");
+
+    setLoading(true);
+    try {
+      console.log("Tentando logar com:", email); // Debug
+
+      // é aqui que ocorre a verificação do usuario
+      await signInWithEmailAndPassword(auth, email, password); // envia pra o firebaze
+      
+      console.log("LOGIN SUCESSO! Redirecionando..."); // Debug
+      
+      // essa rota so vai funcionar caso a função await der certo
+      router.replace("/(tabs)"); 
+      
+    } catch (error: any) {
+      console.log("Erro Login:", error.code); 
+
+      const code = error.code;
+
+      if (
+        code === "auth/invalid-credential" ||
+        code === "auth/user-not-found" ||
+        code === "auth/wrong-password"
+      ) {
+        showAlert("Atenção", "E-mail ou senha incorretos.");
+      } else if (code === "auth/invalid-email") {
+        showAlert("Erro", "O formato do e-mail é inválido.");
+      } else if (code === "auth/too-many-requests") {
+        showAlert("Bloqueado", "Muitas tentativas falhas. Aguarde.");
+      } else {
+        showAlert("Erro no Login", error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // --- FUNÇÃO DE CADASTRO ---
+  const handleRegister = async () => {
+    if (!name || !email || !password)
+      return showAlert("Erro", "Preencha todos os campos.");
+
+    setLoading(true);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      await updateProfile(user, { displayName: name });
+
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        name: name,
+        email: email,
+        role: "cliente",
+        createdAt: new Date().toISOString(),
+      });
+
+      showAlert("Sucesso", "Conta criada com sucesso!");
+      router.replace("/(tabs)");
+    } catch (error: any) {
+      console.log("Erro Cadastro:", error.code);
+      const code = error.code;
+      if (code === "auth/email-already-in-use") {
+        showAlert("Atenção", "Este e-mail já está sendo usado.");
+      } else if (code === "auth/weak-password") {
+        showAlert("Senha Fraca", "A senha deve ter pelo menos 6 caracteres.");
+      } else if (code === "auth/invalid-email") {
+        showAlert("Erro", "E-mail inválido.");
+      } else {
+        showAlert("Erro no Cadastro", error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // --- FUNÇÃO DE RECUPERAR SENHA ---
+  const handleRecover = async () => {
+    if (!email)
+      return showAlert("Erro", "Digite seu e-mail para recuperar a senha.");
+
+    setLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, email);
+      showAlert("Enviado!", "Verifique seu e-mail.");
+      setView("login");
+    } catch (error: any) {
+      console.log("Erro Recover:", error.code);
+      const code = error.code;
+      if (code === "auth/user-not-found") {
+        showAlert("Erro", "E-mail não cadastrado.");
+      } else if (code === "auth/invalid-email") {
+        showAlert("Erro", "E-mail inválido.");
+      } else {
+        showAlert("Erro", error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helpers de Texto
+  const getTitle = () => {
+    if (view === "login") return "Fazer Login";
+    if (view === "cadastro") return "Criar Conta";
+    return "Recuperar Senha";
+  };
+
+  const getButtonText = () => {
+    if (view === "login") return "ENTRAR AGORA";
+    if (view === "cadastro") return "FINALIZAR CADASTRO";
+    return "ENVIAR LINK";
+  };
+
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* LOGO E TÍTULO */}
+        <View style={styles.header}>
+          <View style={styles.logoBox}>
+            <ShoppingBag color="#DC2626" size={40} />
+          </View>
+          <Text style={styles.appTitle}>DI DELIVERY</Text>
+          <Text style={styles.appSubtitle}>O SABOR QUE VOCÊ MERECE</Text>
+        </View>
+
+        {/* CARD DO FORMULÁRIO */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>{getTitle()}</Text>
+
+          {/* CAMPO NOME */}
+          {view === "cadastro" && (
+            <View style={styles.inputContainer}>
+              <UserPlus color="#9CA3AF" size={20} style={styles.inputIcon} />
+              <TextInput
                 style={styles.input}
-                placeholder="E-mail"
-                placeholderTextColor="#666"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                value={email}
-                onChangeText={setEmail}
-                editable={!isLoading}
+                placeholder="Nome Completo"
+                placeholderTextColor="#9CA3AF"
+                value={name}
+                onChangeText={setName}
+              />
+            </View>
+          )}
+
+          {/* CAMPO EMAIL */}
+          <View style={styles.inputContainer}>
+            <Mail color="#9CA3AF" size={20} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Seu melhor e-mail"
+              placeholderTextColor="#9CA3AF"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              value={email}
+              onChangeText={setEmail}
             />
-            
-            {/* Campo Senha */}
-            <TextInput
+          </View>
+
+          {/* CAMPO SENHA */}
+          {view !== "recuperar" && (
+            <View style={styles.inputContainer}>
+              <Lock color="#9CA3AF" size={20} style={styles.inputIcon} />
+              <TextInput
                 style={styles.input}
-                placeholder="Senha"
-                placeholderTextColor="#666"
-                secureTextEntry={true}
+                placeholder="Sua senha secreta"
+                placeholderTextColor="#9CA3AF"
+                secureTextEntry
                 value={password}
                 onChangeText={setPassword}
-                editable={!isLoading}
-            />
-
-            {/* Botão Login Principal */}
-            <TouchableOpacity 
-                style={styles.loginButton}
-                onPress={handleLogin}
-                disabled={isLoading}
-            >
-                {isLoading ? (
-                    <ActivityIndicator color="#E72C2C" />
-                ) : (
-                    <Text style={styles.loginButtonText}>Login</Text>
-                )}
-            </TouchableOpacity>
-
-            {/* Opções de navegação secundárias */}
-            <View style={styles.secondaryActions}>
-                <Text style={styles.textWhite}>Ainda não tem conta? </Text>
-                <TouchableOpacity onPress={() => router.push('/cadastro')} disabled={isLoading}>
-                    <Text style={styles.linkText}>Cadastre-se já!</Text>
-                </TouchableOpacity>
+              />
             </View>
+          )}
 
-            <TouchableOpacity 
-                style={styles.forgotPassword}
-                // Se não tiver a tela recuperar-senha, comente a linha abaixo
-                onPress={() => router.push('/recuperar-senha')}
-                disabled={isLoading}
+          {/* BOTÃO DE AÇÃO */}
+          <TouchableOpacity
+            style={styles.mainButton}
+            onPress={() => {
+              if (view === "login") handleLogin();
+              else if (view === "cadastro") handleRegister();
+              else handleRecover();
+            }}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#78350F" />
+            ) : (
+              <Text style={styles.mainButtonText}>{getButtonText()}</Text>
+            )}
+          </TouchableOpacity>
+
+          {/* RODAPÉ DO CARD */}
+          {view === "recuperar" ? (
+            <TouchableOpacity
+              onPress={() => setView("login")}
+              style={{
+                marginTop: 15,
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-                <Text style={styles.linkText}>Esqueceu a senha?</Text>
+              <ArrowLeft size={16} color="#9CA3AF" />
+              <Text style={[styles.linkText, { marginLeft: 5 }]}>
+                Voltar para o login
+              </Text>
             </TouchableOpacity>
-            
-        </ScrollView>
-    );
-};
+          ) : (
+            <TouchableOpacity
+              onPress={() => setView(view === "login" ? "cadastro" : "login")}
+              style={{ marginTop: 15 }}
+            >
+              <Text style={styles.linkText}>
+                {view === "login"
+                  ? "Não tem conta? Crie uma aqui"
+                  : "Já tem conta? Voltar ao login"}
+              </Text>
+            </TouchableOpacity>
+          )}
 
-// --- Estilos ---
+          {view === "login" && (
+            <TouchableOpacity
+              style={styles.forgotButton}
+              onPress={() => setView("recuperar")}
+            >
+              <KeyRound size={14} color="#EF4444" />
+              <Text style={styles.forgotText}>Esqueci minha senha</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <Text style={styles.footerText}>POWERED BY FIREBASE</Text>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+}
+
+// ESTILOS
 const styles = StyleSheet.create({
-    scrollContainer: {
-        flexGrow: 1,
-        backgroundColor: '#E72C2C', // Fundo vermelho
-        alignItems: 'center',
-        paddingTop: 50,
-        paddingBottom: 30,
-    },
-    burgerImage: {
-        width: 150, 
-        height: 150, 
-        resizeMode: 'contain',
-        marginBottom: 20,
-    },
-    titleText: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: '#FFF', 
-        marginTop: 30,
-        marginBottom: 10
-    },
-    input: {
-        marginTop: 30,
-        width: '80%',
-        height: 60,
-        backgroundColor: '#FFF', // Mudei para branco para ficar mais limpo
-        borderRadius: 8,
-        paddingHorizontal: 20,
-        fontSize: 16,
-        marginBottom: 20,
-        color: '#000',
-    },
-    loginButton: {
-        width: '80%',
-        backgroundColor: '#FFD700', // Botão amarelo
-        paddingVertical: 15,
-        borderRadius: 8,
-        marginTop: 30,
-        marginBottom: 40,
-        alignItems: 'center',
-        elevation: 3, 
-    },
-    loginButtonText: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        color: '#E72C2C', // Texto vermelho no botão
-        textTransform: 'uppercase',
-    },
-    secondaryActions: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    textWhite: {
-        color: '#FFF',
-        fontSize: 14,
-    },
-    linkText: {
-        color: '#FFD700', // Texto amarelo para links
-        fontSize: 14,
-        fontWeight: 'bold',
-        textDecorationLine: 'underline',
-    },
-    forgotPassword: {
-        marginTop: 5,
-    }
+  container: {
+    flex: 1,
+    backgroundColor: "#DC2626",
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+    padding: 20,
+  },
+  header: {
+    alignItems: "center",
+    marginBottom: 30,
+  },
+  logoBox: {
+    backgroundColor: "white",
+    padding: 15,
+    borderRadius: 20,
+    marginBottom: 15,
+    transform: [{ rotate: "-3deg" }],
+    elevation: 8,
+  },
+  appTitle: {
+    fontSize: 32,
+    fontWeight: "900",
+    color: "white",
+    fontStyle: "italic",
+  },
+  appSubtitle: {
+    color: "#FECACA",
+    fontWeight: "bold",
+    letterSpacing: 1,
+    marginTop: 5,
+  },
+  card: {
+    backgroundColor: "white",
+    borderRadius: 30,
+    padding: 25,
+    elevation: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+  },
+  cardTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#1F2937",
+    textAlign: "center",
+    marginBottom: 20,
+    textTransform: "uppercase",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F3F4F6",
+    borderRadius: 15,
+    marginBottom: 15,
+    paddingHorizontal: 15,
+    height: 55,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  inputIcon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    height: "100%",
+    color: "#1F2937",
+    fontWeight: "500",
+  },
+  mainButton: {
+    backgroundColor: "#FBBF24",
+    paddingVertical: 16,
+    borderRadius: 15,
+    alignItems: "center",
+    marginTop: 10,
+    borderBottomWidth: 4,
+    borderBottomColor: "#D97706",
+  },
+  mainButtonText: {
+    color: "#78350F",
+    fontWeight: "900",
+    fontSize: 16,
+  },
+  linkText: {
+    color: "#9CA3AF",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 13,
+  },
+  forgotButton: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+    gap: 5,
+  },
+  forgotText: {
+    color: "#EF4444",
+    fontWeight: "bold",
+    fontSize: 12,
+  },
+  footerText: {
+    textAlign: "center",
+    color: "rgba(255,255,255,0.6)",
+    marginTop: 30,
+    fontSize: 10,
+    fontWeight: "bold",
+    letterSpacing: 2,
+  },
 });
-
-export default LoginScreen;

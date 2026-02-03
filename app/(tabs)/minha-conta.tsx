@@ -1,318 +1,331 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar, ScrollView, Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons'; 
 
+// ✅ CORREÇÃO 1: Ajuste do caminho da importação (subindo 2 níveis para garantir)
+import { useAuth } from '../contexts/auth';
 
-
-// Dados de Exemplo do Usuário
-const USER_NAME = 'Davi Nascimento';
-const USER_EMAIL = 'davi.nascimento@gmail.com';
-const USER_PHONE = '(88) 98152-2318';
-
-// Imagem de Perfil do Usuário
-const USER_ICON = require('../assets/Imagem do WhatsApp de 2025-11-25 à(s) 13.38.50_f195118b.jpg'); 
-
-// Definição da interface
+// Componente de Item de Menu (Lista)
 interface SettingsItemProps {
     icon: keyof typeof Ionicons.glyphMap; 
     label: string;
     onPress: () => void;
+    color?: string;
 }
 
-// Componente de Item de Configuração
-const SettingsItem: React.FC<SettingsItemProps> = ({ icon, label, onPress }) => (
+const SettingsItem: React.FC<SettingsItemProps> = ({ icon, label, onPress, color = "#E72C2C" }) => (
     <TouchableOpacity style={contaStyles.settingItem} onPress={onPress}>
         <View style={contaStyles.itemLeft}>
-            <Ionicons name={icon} size={24} color="#E72C2C" />
-            <Text style={contaStyles.itemLabel}>{label}</Text>
+            <View style={contaStyles.iconContainer}>
+                <Ionicons name={icon} size={22} color={color} />
+            </View>
+            <Text style={[contaStyles.itemLabel, { color: color === "#E72C2C" ? "#333" : color }]}>
+                {label}
+            </Text>
         </View>
-        <Ionicons name="chevron-forward" size={24} color="#999" />
+        <Ionicons name="chevron-forward" size={20} color="#CCC" />
     </TouchableOpacity>
 );
 
 const MinhaContaScreen: React.FC = () => {
-    const router = useRouter(); // Instância do router
+    const router = useRouter();
+    const { user, logout } = useAuth(); 
 
-    const handleEditProfile = () => {
-        // CORRIGIDO: Substituir alert() por uma navegação ou modal
-        console.log('Navegar para a tela de edição de perfil');
-    };
-    
-    // CORRIGIDO: Substituir alert() por uma navegação ou modal
-    const handlePaymentMethods = () => {
-        console.log('Navegar para Métodos de Pagamento');
-    };
+    // Pega os dados reais ou usa o placeholder se estiver carregando
+    const displayName = user?.displayName || "Cliente VIP";
+    const displayEmail = user?.email || "email@didelivery.com";
 
-    // CORRIGIDO: Substituir alert() por uma navegação ou modal
-    const handleAddresses = () => {
-        console.log('Navegar para Endereços Salvos');
+    // ✅ LÓGICA DE LOGOUT FUNCIONAL
+    const handleLogout = async () => {
+        // Função para executar o logout
+        const performLogout = async () => {
+            try {
+                await logout(); // Limpa Firebase e AsyncStorage
+                router.replace('/login'); // Redireciona para login (sem botão de voltar)
+            } catch (error) {
+                console.error("Erro ao sair:", error);
+                Alert.alert("Erro", "Não foi possível sair da conta.");
+            }
+        };
+
+        // Verifica se é Web ou Celular para mostrar o alerta correto
+        if (Platform.OS === 'web') {
+            if (window.confirm("Deseja realmente sair da sua conta?")) {
+                performLogout();
+            }
+        } else {
+            Alert.alert("Sair", "Deseja realmente sair da sua conta?", [
+                { text: "Cancelar", style: "cancel" },
+                { 
+                    text: "Sair", 
+                    style: "destructive",
+                    onPress: performLogout
+                }
+            ]);
+        }
     };
 
     return (
         <View style={contaStyles.fullContainer}>
-            {/* CORRIGIDO: BarStyle deve ser light-content pois o header é vermelho */}
             <StatusBar barStyle="light-content" backgroundColor="#E72C2C" /> 
 
             {/* --- CABEÇALHO --- */}
             <View style={contaStyles.header}>
                 <TouchableOpacity onPress={() => router.back()}> 
-                    {/* Ícone branco no fundo vermelho */}
-                    <Ionicons name="arrow-back" size={28} color="#ffffffff" /> 
+                    <Ionicons name="arrow-back" size={28} color="#fff" /> 
                 </TouchableOpacity>
 
-                {/* Título branco no fundo vermelho */}
-                <Text style={contaStyles.headerTitle}>MINHA CONTA</Text> 
-                <View style={{ width: 28}} /> 
+                <Text style={contaStyles.headerTitle}>MEU PERFIL</Text> 
                 
+                <View style={{ width: 28}} /> 
             </View>
 
-            {/* --- CONTEÚDO PRINCIPAL --- */}
-            <ScrollView contentContainerStyle={contaStyles.content}>
-                
-                {/* Seção de Perfil/Dados */}
-                <View style={contaStyles.profileSection}>
+            {/* --- CONTEÚDO (CARD BRANCO) --- */}
+            <View style={contaStyles.whiteCard}>
+                <ScrollView contentContainerStyle={contaStyles.content} showsVerticalScrollIndicator={false}>
                     
-                    {/* NOVO CONTÊINER ENVOLVENDO A IMAGEM PARA O EFEITO CIRCULAR */}
-                    <View style={contaStyles.avatarWrapper}>
-                        {/* Imagem Local Corrigida */}
-                        <Image 
-                            source={USER_ICON} 
-                            style={contaStyles.profileImage} 
-                            // ESSENCIAL: Garante que a imagem preencha o contêiner.
-                            resizeMode="cover" 
-                        />
+                    {/* PERFIL */}
+                    <View style={contaStyles.profileHeader}>
+                        <View style={contaStyles.avatarWrapper}>
+                            <Image 
+                                source={require('../assets/logo.png')} 
+                                style={contaStyles.profileImage} 
+                                resizeMode="cover" 
+                            />
+                            <View style={contaStyles.editIconBadge}>
+                                <Ionicons name="camera" size={14} color="#FFF" />
+                            </View>
+                        </View>
+
+                        <Text style={contaStyles.userName}>{displayName}</Text>
+                        <Text style={contaStyles.userEmail}>{displayEmail}</Text>
+                        
+                        <TouchableOpacity style={contaStyles.editProfileButton}>
+                            <Text style={contaStyles.editProfileText}>Editar Dados</Text>
+                        </TouchableOpacity>
                     </View>
 
-                    <Text style={contaStyles.userName}>{USER_NAME}</Text>
-                    <Text style={contaStyles.userEmail}>{USER_EMAIL}</Text>
-                    <Text style={contaStyles.userPhone}>{USER_PHONE}</Text>
+                    {/* OPÇÕES */}
+                    <Text style={contaStyles.sectionTitle}>Minha Conta</Text>
+                    <View style={contaStyles.settingsList}>
+                        <SettingsItem icon="location-outline" label="Meus Endereços" onPress={() => router.push('/adicionar-localizacao')} />
+                        <SettingsItem icon="receipt-outline" label="Meus Pedidos" onPress={() => router.push('./historico')} />
+                        <SettingsItem icon="wallet-outline" label="Formas de Pagamento" onPress={() => {}} />
+                    </View>
+
+                    <Text style={contaStyles.sectionTitle}>Suporte</Text>
+                    <View style={contaStyles.settingsList}>
+                        <SettingsItem icon="help-circle-outline" label="Ajuda e Suporte" onPress={() => {}} />
+                        {/* Botão Sair com a função corrigida */}
+                        <SettingsItem icon="log-out-outline" label="Sair da Conta" color="#E72C2C" onPress={handleLogout} />
+                    </View>
                     
-                    <TouchableOpacity style={contaStyles.editButton} onPress={handleEditProfile}>
-                        <Text style={contaStyles.editButtonText}>Editar Perfil</Text>
-                    </TouchableOpacity>
-                </View>
+                    <View style={{height: 120}} />
+                </ScrollView>
+            </View>
 
-                {/* Seção de Opções/Configurações */}
-                <View style={contaStyles.settingsSection}>
-                    <Text style={contaStyles.sectionTitle}>Configurações da Conta</Text>
-
-                    <SettingsItem 
-                        icon="location-outline"
-                        label="Meus Endereços"
-                        onPress={() => router.push('/adicionar-localizacao')} 
-                    />
-                    
-                    <SettingsItem 
-                        icon="receipt-outline"
-                        label="Histórico de Pedidos"
-                        onPress={() => router.push('./historico')} 
-                    />
-
-                    <SettingsItem 
-                        icon="help-circle-outline"
-                        label="Ajuda e Suporte"
-                        onPress={() => console.log('Navegar para Ajuda')}
-                    />
-
-                    <SettingsItem 
-                        icon="document-text-outline"
-                        label="Termos de Serviço"
-                        onPress={() => console.log('Navegar para Termos')}
-                    />
-                </View>
-
-                {/* Botão de Logout */}
-                <TouchableOpacity style={contaStyles.logoutButton} onPress={() => router.replace('/login')}>
-                    <Text style={contaStyles.logoutText}>Sair da Conta</Text>
+            {/* --- BARRA FLUTUANTE --- */}
+            <View style={contaStyles.floatingTabBar}>
+                <TouchableOpacity style={contaStyles.tabItem} onPress={() => router.replace('/(tabs)')}>
+                    <Ionicons name="home-outline" size={24} color="#fff" />
+                    <Text style={contaStyles.tabLabel}>Início</Text>
                 </TouchableOpacity>
 
-            </ScrollView>
+                <TouchableOpacity style={contaStyles.tabItem} onPress={() => router.push('/(tabs)/buscar')}>
+                    <Ionicons name="search-outline" size={24} color="#fff" />
+                    <Text style={contaStyles.tabLabel}>Buscar</Text>
+                </TouchableOpacity>
 
-         <View style={contaStyles.tabBar}>
-                        <TouchableOpacity style={contaStyles.tabItem} onPress={() => router.replace('/(tabs)')}>
-                            <Ionicons name="home" size={24} color="#edededff" />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={contaStyles.tabItem} onPress={() => router.push('/(tabs)/buscar')}>
-                            <Ionicons name="search-outline" size={24} color="#ffffffff" />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={contaStyles.tabItem} onPress={() => router.push('/carrinho')}>
-                            <Ionicons name="cart-outline" size={24} color="#ffffffff" />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={contaStyles.tabItem} onPress={() => router.push('/(tabs)/minha-conta')}>
-                            <Ionicons name="person-outline" size={24} color="#FFD700" />
-                        </TouchableOpacity>
-                    </View>
+                <TouchableOpacity 
+                    style={contaStyles.centerTabItem} 
+                    onPress={() => router.push('/carrinho')}
+                    activeOpacity={0.9}
+                >
+                    <Ionicons name="cart" size={32} color="#E72C2C" />
+                </TouchableOpacity>
 
+                <TouchableOpacity style={contaStyles.tabItem} onPress={() => router.push('/(tabs)/menu')}>
+                    <Ionicons name="fast-food-outline" size={24} color="#fff" />
+                    <Text style={contaStyles.tabLabel}>Menu</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={contaStyles.tabItem} onPress={() => {}}>
+                    <Ionicons name="person" size={24} color="#fff" />
+                    <Text style={[contaStyles.tabLabel, { fontWeight: 'bold' }]}>Perfil</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 };
 
 // --- Estilos ---
-const AVATAR_SIZE = 80;
+const AVATAR_SIZE = 100;
 
 const contaStyles = StyleSheet.create({
     fullContainer: {
         flex: 1,
-        backgroundColor: '#F0F0F0',
-    },
-    topHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingTop: 15,
-        paddingBottom: 10,
-        backgroundColor: '#E72C2C',
-        elevation: 2,
-        color: '#000000ff'
-    },
-    logoText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#000000ff',
+        backgroundColor: '#E72C2C', 
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: 15,
-        // CORRIGIDO: Usar paddingTop condicionalmente em produção ou Expo SDK 50+
-        paddingTop: 20, // Ajuste para acomodar a StatusBar
-        backgroundColor: '#E72C2C', // Fundo vermelho
-        // Removido borderBottom para visual limpo
+        paddingHorizontal: 20,
+        paddingTop: 50,
+        paddingBottom: 25,
     },
     headerTitle: {
         fontSize: 20,
-        fontWeight: 'bold',
-        color: '#ffffffff', // Título branco
+        fontWeight: '900',
+        color: '#FFF',
+        letterSpacing: 1,
+        fontStyle: 'italic'
+    },
+    whiteCard: {
+        flex: 1,
+        backgroundColor: '#F2F2F2', 
+        borderTopLeftRadius: 35,
+        borderTopRightRadius: 35,
+        overflow: 'hidden',
     },
     content: {
-        padding: 15,
-    },
-    profileSection: {
-        backgroundColor: '#FFF',
-        borderRadius: 8,
         padding: 20,
-        alignItems: 'center',
-        marginBottom: 20,
-        elevation: 3,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        shadowOffset: { width: 0, height: 2 },
     },
-    // NOVO ESTILO: Contêiner do Círculo Vermelho (o aro)
+    profileHeader: {
+        alignItems: 'center',
+        marginBottom: 30,
+        marginTop: 10
+    },
     avatarWrapper: {
-        width: AVATAR_SIZE + 10, // Um pouco maior que a imagem para fazer o aro
-        height: AVATAR_SIZE + 10,
-        borderRadius: (AVATAR_SIZE + 10) / 2,
-        backgroundColor: '#E72C2C', // Cor do aro vermelho
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 10,
-        overflow: 'hidden', // ESSENCIAL: Garante que a borda da imagem seja cortada
-    },
-    profileImage: {
         width: AVATAR_SIZE,
         height: AVATAR_SIZE,
-        borderRadius: AVATAR_SIZE / 2, 
+        borderRadius: AVATAR_SIZE / 2,
+        backgroundColor: '#FFF',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 15,
+        borderWidth: 4,
+        borderColor: '#FFF',
+        elevation: 5,
+    },
+    profileImage: {
+        width: '100%',
+        height: '100%',
+        borderRadius: AVATAR_SIZE / 2,
+    },
+    editIconBadge: {
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        backgroundColor: '#FFD700',
+        padding: 8,
+        borderRadius: 20,
+        borderWidth: 2,
+        borderColor: '#FFF'
     },
     userName: {
         fontSize: 22,
         fontWeight: 'bold',
-        color: '#E72C2C',
+        color: '#1F2937',
     },
     userEmail: {
-        fontSize: 16,
-        color: '#666',
-        marginTop: 5,
+        fontSize: 14,
+        color: '#6B7280',
+        marginTop: 2,
     },
-    userPhone: {
-        fontSize: 16,
-        color: '#666',
-        marginBottom: 10,
-    },
-    editButton: {
-        marginTop: 10,
+    editProfileButton: {
+        marginTop: 15,
         paddingHorizontal: 20,
         paddingVertical: 8,
         borderRadius: 20,
-        // CORRIGIDO: Não precisa de borderWidth se o fundo é a mesma cor da borda
-        backgroundColor: '#E72C2C', 
-    },
-    editButtonText: {
-        color: '#ffffffff',
-        fontWeight: 'bold',
-    },
-    settingsSection: {
         backgroundColor: '#FFF',
-        borderRadius: 8,
-        marginBottom: 20,
-        paddingHorizontal: 10,
-        elevation: 3,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        shadowOffset: { width: 0, height: 2 },
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+    },
+    editProfileText: {
+        color: '#333',
+        fontWeight: '600',
+        fontSize: 13
     },
     sectionTitle: {
-        fontSize: 18,
+        fontSize: 14,
         fontWeight: 'bold',
-        padding: 15,
-        color: '#333',
-        borderBottomWidth: 1,
-        borderBottomColor: '#EEE',
+        color: '#9CA3AF',
+        textTransform: 'uppercase',
+        marginBottom: 10,
+        marginTop: 10,
+        marginLeft: 5
+    },
+    settingsList: {
+        backgroundColor: '#FFF',
+        borderRadius: 15,
+        paddingHorizontal: 5,
+        marginBottom: 20,
+        elevation: 2,
     },
     settingItem: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 15,
-        paddingHorizontal: 10,
+        paddingVertical: 18,
+        paddingHorizontal: 15,
         borderBottomWidth: 1,
-        borderBottomColor: '#F0F0F0',
+        borderBottomColor: '#F3F4F6',
     },
     itemLeft: {
         flexDirection: 'row',
         alignItems: 'center',
     },
+    iconContainer: {
+        width: 35,
+        alignItems: 'center'
+    },
     itemLabel: {
         fontSize: 16,
-        marginLeft: 15,
-        color: '#333',
+        marginLeft: 10,
+        fontWeight: '500',
     },
-    logoutButton: {
+    floatingTabBar: {
+        position: 'absolute',
+        bottom: 25,
+        left: 20,
+        right: 20,
+        height: 70,
         backgroundColor: '#E72C2C',
-        paddingVertical: 15,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginBottom: 30,
-        elevation: 3,
-        shadowColor: '#E72C2C',
-        shadowOpacity: 0.4,
-        shadowRadius: 5,
-        shadowOffset: { width: 0, height: 2 },
-    },
-    logoutText: {
-        color: '#FFF',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    tabBar: {
+        borderRadius: 35,
         flexDirection: 'row',
-        height: 60,
-        backgroundColor: '#E72C2C',
-        borderTopWidth: 1,
-        borderTopColor: '#DDD',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         alignItems: 'center',
+        paddingHorizontal: 15,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
+        elevation: 10,
     },
     tabItem: {
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        width: 50,
     },
+    tabLabel: {
+        fontSize: 9,
+        color: '#FFF',
+        marginTop: 2
+    },
+    centerTabItem: {
+        width: 65,
+        height: 65,
+        borderRadius: 32.5,
+        backgroundColor: '#FFD700', 
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 35, 
+        borderWidth: 5,
+        borderColor: '#F2F2F2', 
+        elevation: 5
+    }
 });
 
 export default MinhaContaScreen;

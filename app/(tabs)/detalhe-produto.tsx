@@ -48,7 +48,7 @@ const DetalheProdutoScreen: React.FC = () => {
                 
                 {/* Imagem do Produto */}
                 <Image 
-                    source={require('../assets/LogoInicialApp.png')} 
+                    source={require('../assets/logo.png')} 
                     style={detailStyles.productImage} 
                 />
                 

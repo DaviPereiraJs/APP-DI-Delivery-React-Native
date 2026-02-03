@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, StatusBar, ScrollV
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons'; 
 
-// --- INTERFACES DE TIPAGEM ---
+// --- INTERFACES ---
 type IconName = keyof typeof Ionicons.glyphMap;
 
 interface CategoryData {
@@ -23,46 +23,50 @@ interface RestaurantData {
 interface ComponentProps<T> {
     item: T;
 }
-// ----------------------------------------------------
 
-// Dados de Exemplo para Categorias Populares (Tipados)
+// --- DADOS (MOCK) ---
 const popularCategories: CategoryData[] = [
-    { id: '1', name: 'Hambúrgueres', icon: 'fast-food-outline' as IconName },
-    { id: '2', name: 'Pizzas', icon: 'pizza-outline' as IconName },
-    { id: '3', name: 'Japonesa', icon: 'restaurant-outline' as IconName },
-    { id: '4', name: 'Sobremesas', icon: 'ice-cream-outline' as IconName },
-    { id: '5', name: 'Brasileira', icon: 'leaf-outline' as IconName },
-    { id: '6', name: 'Lanches', icon: 'sandwich-outline' as IconName },
+    { id: '1', name: 'Hambúrgueres', icon: 'fast-food-outline' },
+    { id: '2', name: 'Pizzas', icon: 'pizza-outline' },
+    { id: '3', name: 'Japonesa', icon: 'restaurant-outline' },
+    { id: '4', name: 'Sobremesas', icon: 'ice-cream-outline' },
+    { id: '5', name: 'Brasileira', icon: 'leaf-outline' },
+    // ✅ CORREÇÃO 1: Ícone válido (nutrition-outline) para não dar erro vermelho
+    { id: '6', name: 'Lanches', icon: 'nutrition-outline' }, 
 ];
 
-// Dados de Exemplo para Resultados de Busca (Mock)
 const searchResults: RestaurantData[] = [
     { id: 'r1', name: 'DI Delivery', rating: 4.9, time: '20-30 min', category: 'Lanches' },
     { id: 'r2', name: 'Mega Bacon House', rating: 4.5, time: '35-45 min', category: 'Hambúrgueres' },
     { id: 'r3', name: 'Rei do Hambúrguer', rating: 3.9, time: '15-25 min', category: 'Lanches' },
 ];
 
-// Componente para renderizar um card de categoria (Tipagem corrigida)
+// --- COMPONENTES ---
 const CategoryCard: React.FC<ComponentProps<CategoryData>> = ({ item }) => (
     <TouchableOpacity style={searchStyles.categoryCard}>
-        <Ionicons name={item.icon} size={30} color="#E72C2C" />
+        <View style={searchStyles.iconCircle}>
+            <Ionicons name={item.icon} size={24} color="#E72C2C" />
+        </View>
         <Text style={searchStyles.categoryText}>{item.name}</Text>
     </TouchableOpacity>
 );
 
-// Componente para renderizar um resultado de restaurante (Tipagem corrigida)
 const RestaurantResult: React.FC<ComponentProps<RestaurantData>> = ({ item }) => (
     <TouchableOpacity style={searchStyles.resultCard}>
-        <View style={searchStyles.resultHeader}>
-            <Text style={searchStyles.restaurantName}>{item.name}</Text>
-            <View style={searchStyles.ratingBox}>
-                <Ionicons name="star" size={14} color="#FFF" />
-                <Text style={searchStyles.ratingText}>{item.rating}</Text>
-            </View>
+        <View style={searchStyles.resultIcon}>
+             <Ionicons name="storefront-outline" size={24} color="#FFF" />
         </View>
-        <View style={searchStyles.resultFooter}>
-            <Text style={searchStyles.resultTime}>{item.time}</Text>
-            <Text style={searchStyles.resultCategory}>{item.category}</Text>
+        <View style={searchStyles.resultInfo}>
+            <View style={searchStyles.resultHeader}>
+                <Text style={searchStyles.restaurantName}>{item.name}</Text>
+                <View style={searchStyles.ratingBox}>
+                    <Ionicons name="star" size={10} color="#FFF" />
+                    <Text style={searchStyles.ratingText}>{item.rating}</Text>
+                </View>
+            </View>
+            <View style={searchStyles.resultFooter}>
+                <Text style={searchStyles.resultCategory}>{item.category} • {item.time}</Text>
+            </View>
         </View>
     </TouchableOpacity>
 );
@@ -76,97 +80,122 @@ const BuscarScreen: React.FC = () => {
             setIsSearching(false);
         } else {
             setIsSearching(true);
-            console.log('Buscando por:', searchText);
         }
     };
 
     return (
         <View style={searchStyles.fullContainer}>
-            <StatusBar barStyle="dark-content" backgroundColor="#FFF" /> 
+            <StatusBar barStyle="light-content" backgroundColor="#E72C2C" /> 
 
-            {/* --- CABEÇALHO E BARRA DE BUSCA --- */}
+            {/* --- CABEÇALHO VERMELHO --- */}
             <View style={searchStyles.header}>
-
                 <TouchableOpacity onPress={() => router.back()}>
-                    <Ionicons name="arrow-back" size={28} color="#ffffffff" />
+                    <Ionicons name="arrow-back" size={28} color="#fff" />
                 </TouchableOpacity>
                 
-                <Text style={searchStyles.sectionTitle1}>BUSCAR</Text>
+                <Text style={searchStyles.headerTitle}>BUSCAR</Text>
 
-              
-                <TouchableOpacity style={searchStyles.searchIcon} onPress={handleSearch}>
-                    <Ionicons name="search" size={24} color="#ffffffff" />
-                </TouchableOpacity>
+                <View style={{width: 28}} /> 
             </View>
 
-            {/* --- CONTEÚDO PRINCIPAL --- */}
-            <ScrollView style={searchStyles.content}>
+            {/* --- CARD BRANCO ARREDONDADO --- */}
+            <View style={searchStyles.whiteCard}>
                 
-                {/* Seção de Resultados da Busca */}
-                {isSearching ? (
-                    <View>
-                        <Text style={searchStyles.sectionTitle}>{`Resultados para "&{searchText}"`}</Text>
-                        <FlatList
-                            data={searchResults}
-                            keyExtractor={item => item.id}
-                            // CORREÇÃO FINAL: Usando Type Assertion no renderItem para forçar o tipo.
-                            renderItem={({ item }) => <RestaurantResult item={item as RestaurantData} />}
-                            scrollEnabled={false}
-                            ListEmptyComponent={() => <Text style={searchStyles.emptyText}>Nenhum resultado encontrado.</Text>}
-                        />
-                    </View>
-                ) : (
-                    /* Seção de Categorias Populares (quando não está buscando) */
-                    <View>
-
+                {/* INPUT DE BUSCA */}
+                <View style={searchStyles.searchContainer}>
+                    <Ionicons name="search" size={20} color="#999" style={{marginLeft: 15}} />
                     <TextInput
-                    style={searchStyles.searchInput}
-                    placeholder="Busque por pratos, restaurantes ou cozinhas..."
-                    placeholderTextColor="#999"
-                    value={searchText}
-                    onChangeText={setSearchText}
-                    onSubmitEditing={handleSearch}
-                />
+                        style={searchStyles.searchInput}
+                        placeholder="O que vamos comer hoje?"
+                        placeholderTextColor="#999"
+                        value={searchText}
+                        onChangeText={setSearchText}
+                        onSubmitEditing={handleSearch}
+                        returnKeyType="search"
+                    />
+                </View>
 
-                        <Text style={searchStyles.sectionTitle}>Categorias Populares</Text>
-                        <FlatList
-                            data={popularCategories}
-                            keyExtractor={item => item.id}
-                            // CORREÇÃO FINAL: Usando Type Assertion no renderItem para forçar o tipo.
-                            renderItem={({ item }) => <CategoryCard item={item as CategoryData} />}
-                            numColumns={3}
-                            columnWrapperStyle={searchStyles.categoryRow}
-                            scrollEnabled={false}
-                        />
+                <ScrollView 
+                    style={searchStyles.content} 
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ paddingBottom: 100 }} 
+                >
+                    
+                    {/* RESULTADOS OU CATEGORIAS */}
+                    {isSearching ? (
+                        <View>
+                            <Text style={searchStyles.sectionTitle}>Resultados para {searchText}</Text>
+                            <FlatList
+                                data={searchResults}
+                                keyExtractor={item => item.id}
+                                renderItem={({ item }) => <RestaurantResult item={item} />}
+                                scrollEnabled={false}
+                                ListEmptyComponent={<Text style={searchStyles.emptyText}>Nenhum resultado encontrado.</Text>}
+                            />
+                        </View>
+                    ) : (
+                        <View>
+                            <Text style={searchStyles.sectionTitle}>Categorias Populares</Text>
+                            <FlatList
+                                data={popularCategories}
+                                keyExtractor={item => item.id}
+                                renderItem={({ item }) => <CategoryCard item={item} />}
+                                numColumns={3}
+                                columnWrapperStyle={searchStyles.categoryRow}
+                                scrollEnabled={false}
+                            />
 
-                        <Text style={searchStyles.sectionTitle}>Restaurantes Recomendados</Text>
-                        <FlatList
-                            data={searchResults}
-                            keyExtractor={item => item.id}
-                            // CORREÇÃO FINAL: Usando Type Assertion no renderItem para forçar o tipo.
-                            renderItem={({ item }) => <RestaurantResult item={item as RestaurantData} />}
-                            scrollEnabled={false}
-                        />
-                    </View>
-                )}
+                            <Text style={searchStyles.sectionTitle}>Sugestões para você</Text>
+                            <FlatList
+                                data={searchResults}
+                                keyExtractor={item => item.id}
+                                renderItem={({ item }) => <RestaurantResult item={item} />}
+                                scrollEnabled={false}
+                            />
+                        </View>
+                    )}
 
-            </ScrollView>
+                </ScrollView>
+            </View>
 
-            {/* BARRA DE NAVEGAÇÃO INFERIOR */}
-            <View style={searchStyles.tabBar}>
-                {/* Home: '/(tabs)' é o caminho correto para o index */}
+            {/* --- BARRA FLUTUANTE --- */}
+            <View style={searchStyles.floatingTabBar}>
+                
+                {/* 1. Início */}
                 <TouchableOpacity style={searchStyles.tabItem} onPress={() => router.replace('/(tabs)')}>
-                    <Ionicons name="home-outline" size={24} color="#ffffffff" />
+                    <Ionicons name="home-outline" size={24} color="#fff" />
+                    <Text style={searchStyles.tabLabel}>Início</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={searchStyles.tabItem}>
-                    <Ionicons name="search" size={24} color="#FFD700" /> {/* Ativo */}
+
+                {/* 2. Buscar (ATIVO - AMARELO) */}
+                <TouchableOpacity style={searchStyles.tabItem} onPress={() => {}}>
+                    {/* Ícone Amarelo */}
+                    <Ionicons name="search" size={24} color="#FFD700" />
+                    {/* Texto Amarelo e Negrito */}
+                    <Text style={[searchStyles.tabLabel, { color: '#FFD700', fontWeight: 'bold' }]}>Buscar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={searchStyles.tabItem} onPress={() => router.push('/(tabs)/carrinho')}>
-                    <Ionicons name="cart-outline" size={24} color="#ffffffff" />
+
+                {/* 3. Carrinho */}
+                <TouchableOpacity 
+                    style={searchStyles.centerTabItem} 
+                    onPress={() => router.push('/carrinho')}
+                    activeOpacity={0.9}
+                >
+                    <Ionicons name="cart" size={32} color="#E72C2C" />
                 </TouchableOpacity>
+
+                {/* 4. Menu */}
+                <TouchableOpacity style={searchStyles.tabItem} onPress={() => router.push('/(tabs)/menu')}>
+                    <Ionicons name="fast-food-outline" size={24} color="#fff" />
+                    <Text style={searchStyles.tabLabel}>Menu</Text>
+                </TouchableOpacity>
+
+                {/* 5. Perfil */}
                 <TouchableOpacity style={searchStyles.tabItem} onPress={() => router.push('/(tabs)/minha-conta')}>
-                    <Ionicons name="person-outline" size={24} color="#ffffffff" />
+                    <Ionicons name="person-outline" size={24} color="#fff" />
+                    <Text style={searchStyles.tabLabel}>Perfil</Text>
                 </TouchableOpacity>
+
             </View>
         </View>
     );
@@ -176,85 +205,117 @@ const BuscarScreen: React.FC = () => {
 const searchStyles = StyleSheet.create({
     fullContainer: {
         flex: 1,
-        backgroundColor: '#FFF',
+        backgroundColor: '#E72C2C', 
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 15,
-        paddingTop: 10,
-        backgroundColor: '#E72C2C',
-        borderBottomWidth: 1,
-        borderBottomColor: '#EEE',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        paddingTop: 50,
+        paddingBottom: 25,
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: '900',
+        color: '#FFF',
+        letterSpacing: 1,
+        fontStyle: 'italic'
+    },
+    whiteCard: {
+        flex: 1,
+        backgroundColor: '#F9FAFB', 
+        borderTopLeftRadius: 35,
+        borderTopRightRadius: 35,
+        paddingTop: 20,
+        overflow: 'hidden',
+    },
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#FFF',
+        marginHorizontal: 20,
+        borderRadius: 15,
+        height: 50,
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        marginBottom: 10
     },
     searchInput: {
         flex: 1,
-        backgroundColor: '#F0F0F0',
-        height: 50,
-        borderRadius: 25,
-        paddingHorizontal: 20,
+        height: '100%',
+        paddingHorizontal: 10,
         fontSize: 16,
-        marginTop: 10,
-        marginRight: 10,
-        marginLeft: 13,
-        padding: 20
-    },
-    searchIcon: {
-        padding: 5,
+        color: '#333'
     },
     content: {
         flex: 1,
-        padding: 15,
+        paddingHorizontal: 20,
     },
     sectionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
         color: '#333',
-        marginBottom: 10,
-        marginTop: 20,
+        marginBottom: 15,
+        marginTop: 15,
     },
-
-     sectionTitle1: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#ffffffff',
-        marginBottom: 10,
-        marginTop: 5,
-        marginLeft: 120,
-        marginRight: 115
-    },
-
-    // Estilos de Categoria
     categoryRow: {
         justifyContent: 'space-between',
-        marginBottom: 10,
+        marginBottom: 15,
     },
     categoryCard: {
-        width: '30%',
+        width: '31%',
         height: 100,
-        backgroundColor: '#F7F7F7',
-        borderRadius: 8,
+        backgroundColor: '#FFF',
+        borderRadius: 15,
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 10,
-        borderWidth: 1,
-        borderColor: '#EEE',
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOpacity: 0.05,
+        shadowRadius: 3,
+    },
+    iconCircle: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: '#FFF0F0',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 5
     },
     categoryText: {
         marginTop: 5,
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: '600',
-        color: '#333',
+        color: '#555',
     },
-    // Estilos de Resultado
     resultCard: {
         backgroundColor: '#FFF',
+        borderRadius: 15,
+        marginBottom: 12,
         padding: 15,
-        borderRadius: 8,
-        marginBottom: 10,
-        borderWidth: 1,
-        borderColor: '#EEE',
-        elevation: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOpacity: 0.05,
+        shadowRadius: 3,
+    },
+    resultIcon: {
+        width: 50,
+        height: 50,
+        borderRadius: 10,
+        backgroundColor: '#E72C2C',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 15
+    },
+    resultInfo: {
+        flex: 1,
     },
     resultHeader: {
         flexDirection: 'row',
@@ -262,35 +323,30 @@ const searchStyles = StyleSheet.create({
         alignItems: 'center',
     },
     restaurantName: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 'bold',
-        color: '#E72C2C',
+        color: '#333',
     },
     ratingBox: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FFD700', // Amarelo
-        paddingHorizontal: 8,
-        paddingVertical: 4,
+        backgroundColor: '#FFD700',
+        paddingHorizontal: 6,
+        paddingVertical: 2,
         borderRadius: 5,
     },
     ratingText: {
-        marginLeft: 5,
+        marginLeft: 3,
         fontWeight: 'bold',
-        color: '#E72C2C',
-        fontSize: 14,
+        color: '#78350F',
+        fontSize: 12,
     },
     resultFooter: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 8,
-    },
-    resultTime: {
-        color: '#666',
+        marginTop: 5,
     },
     resultCategory: {
         color: '#999',
-        fontSize: 12,
+        fontSize: 13,
     },
     emptyText: {
         textAlign: 'center',
@@ -298,21 +354,46 @@ const searchStyles = StyleSheet.create({
         fontSize: 16,
         color: '#666',
     },
-    // --- Estilos da Tab Bar --- 
-    tabBar: {
-        flexDirection: 'row',
-        height: 60,
+    floatingTabBar: {
+        position: 'absolute',
+        bottom: 25,
+        left: 20,
+        right: 20,
+        height: 70,
         backgroundColor: '#E72C2C',
-        borderTopWidth: 1,
-        borderTopColor: '#DDD',
-        justifyContent: 'space-around',
+        borderRadius: 35,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
+        paddingHorizontal: 15,
+        elevation: 10,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
     },
     tabItem: {
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        width: 50,
     },
+    tabLabel: {
+        fontSize: 9,
+        color: '#FFF',
+        marginTop: 2
+    },
+    centerTabItem: {
+        width: 65,
+        height: 65,
+        borderRadius: 32.5,
+        backgroundColor: '#FFD700',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 35, 
+        borderWidth: 5,
+        borderColor: '#F2F2F2', 
+        elevation: 5
+    }
 });
 
 export default BuscarScreen;
